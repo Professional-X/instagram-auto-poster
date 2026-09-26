@@ -40,7 +40,9 @@ jobs:
       COMPOSIO_CONNECTED_ACCOUNT_ID: ${{ secrets.COMPOSIO_CONNECTED_ACCOUNT_ID }}
       COMPOSIO_USER_ID: ${{ secrets.COMPOSIO_USER_ID }}
       INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
-      AI_API_KEY: ${{ secrets.AI_API_KEY }}
+      # Groq (OpenAI-compatible API) for AI caption generation. Optional --
+      # if absent or invalid, generate_content.py falls back to deterministic content.
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
 
     steps:
       - name: Checkout

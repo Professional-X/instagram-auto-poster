@@ -9,8 +9,11 @@
     "ig_user_id": "PUT_IN_GITHUB_SECRET_INSTAGRAM_USER_ID (your Instagram Business account numeric ID)"
   },
   "ai": {
-    "provider": "none (v1 uses built-in deterministic content). Reserved for future: openai | anthropic | local",
-    "api_key": "PUT_IN_GITHUB_SECRET_AI_API_KEY (optional)"
+    "provider": "groq",
+    "model": "llama-3.3-70b-versatile",
+    "endpoint": "https://api.groq.com/openai/v1/chat/completions",
+    "api_key": "PUT_IN_GITHUB_SECRET_GROQ_API_KEY (from https://console.groq.com/keys)",
+    "fallback_note": "If GROQ_API_KEY is missing or invalid, generate_content.py falls back to deterministic content from config/topics.yaml."
   },
   "schedule": {
     "cron": "30 12 * * *",

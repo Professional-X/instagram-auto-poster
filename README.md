@@ -1,6 +1,6 @@
-# Instagram Auto Poster
+# Instagram Auto Poster — Web Design Agency Edition
 
-GitHub Actions automatically generates and publishes daily Instagram content using Composio.
+GitHub Actions automatically generates and publishes daily Instagram content for a **web design agency**, using Composio to publish and **Groq** (OpenAI-compatible LLM API) for AI-generated captions.
 
 ---
 
@@ -8,14 +8,21 @@ GitHub Actions automatically generates and publishes daily Instagram content usi
 
 Once configured, this repository runs on a schedule (default: **12:30 UTC every day**) and:
 
-1. Picks today's topic from `config/topics.yaml` (rotates daily across 7 topics).
-2. Generates a deterministic 1080x1080 PNG image (gradient + topic title + a one-line fact) using Pillow.
-3. Builds a short, useful caption with 3 relevant hashtags.
-4. Commits the image to the repo so it's reachable at a public raw URL.
-5. Calls **Composio's v3 Instagram API** to publish the image:
+1. Picks today's topic from `config/topics.yaml` — 7 rotating web-design themes (UX, conversion, typography, color, page speed, mobile-first, SEO).
+2. Picks a seed fact for that topic (rotates by SHA-256 of date).
+3. Calls **Groq** (`llama-3.3-70b-versatile`) to expand the seed fact into:
+   - A short punchy image headline (5-8 words)
+   - An Instagram caption (120-220 chars, hook + value + CTA)
+   - 3-5 relevant hashtags
+4. Renders a 1080×1080 PNG (gradient background + topic title + AI headline) using Pillow.
+5. Commits the image to the repo so it's reachable at a public raw URL.
+6. Calls **Composio's v3 Instagram API** to publish the image:
    - `INSTAGRAM_CREATE_MEDIA_CONTAINER` → returns `creation_id`
+   - Polls `INSTAGRAM_GET_POST_STATUS` until `status_code == "FINISHED"`
    - `INSTAGRAM_CREATE_POST` → returns published media ID
-6. Records the publication in `content/history.json` (idempotency — re-runs don't double-post).
+7. Records the publication in `content/history.json` (idempotency — re-runs don't double-post or burn extra Groq credits).
+
+**Graceful fallback**: if `GROQ_API_KEY` is missing, invalid, rate-limited, or returns any error, the script automatically falls back to deterministic content built from the seed fact. The workflow never fails purely because of Groq.
 
 The workflow also supports **manual execution** with optional `date_override` and `dry_run` inputs.
 
@@ -95,11 +102,11 @@ In your repo: **Settings → Secrets and variables → Actions → New repositor
 
 | Secret name | Required | Example | Notes |
 |---|---|---|---|
-| `COMPOSIO_API_KEY` | ✅ | `csk_...` | From Composio dashboard |
+| `COMPOSIO_API_KEY` | ✅ | `ak_...` | From Composio dashboard |
 | `COMPOSIO_CONNECTED_ACCOUNT_ID` | ✅ | `ca_abc123...` | From Composio → Connected Accounts |
 | `COMPOSIO_USER_ID` | ✅ | `default` | Often `"default"` for personal accounts |
 | `INSTAGRAM_USER_ID` | ✅ | `17841405822329911` | Numeric IG Business account ID |
-| `AI_API_KEY` | ❌ | — | Reserved for future AI caption generation |
+| `GROQ_API_KEY` | ⚠️ Optional | `gsk_...` | From https://console.groq.com/keys — enables AI captions. If missing or invalid, deterministic content is used. |
 
 **Never** put these values in `instagram.yml`, `*.json`, `*.py`, or any committed file. The workflow references them as `${{ secrets.NAME }}` so they're injected at runtime and masked in logs.
 
@@ -125,7 +132,17 @@ GitHub → **Actions** tab → **Instagram Automation** → **Run workflow** →
 | `COMPOSIO_CONNECTED_ACCOUNT_ID` | Identifies which IG account to publish to |
 | `COMPOSIO_USER_ID` | Composio-side user ID (usually `"default"`) |
 | `INSTAGRAM_USER_ID` | Instagram Business account numeric ID (passed to Graph API) |
-| `AI_API_KEY` | Reserved — not used in v1 |
+| `GROQ_API_KEY` | Groq API key for AI caption generation (OpenAI-compatible endpoint at `api.groq.com/openai/v1`) |
+
+### Groq integration
+
+- **Model**: `llama-3.3-70b-versatile` (fast, high-quality, free tier generous).
+- **Endpoint**: `POST https://api.groq.com/openai/v1/chat/completions` (OpenAI-compatible).
+- **Response format**: `json_object` mode — Groq returns strict JSON with `image_headline`, `caption`, `hashtags`.
+- **Fallback**: any error (403, 429, network, malformed JSON) → script logs a warning and uses the deterministic seed fact as both headline and caption. The workflow never fails because of Groq.
+- **Idempotency**: if `content/<date>.json` already exists with `ai_generated: true`, the script reuses it and skips the Groq call entirely. This prevents burning credits on workflow re-runs.
+
+If you need to regenerate AI content for a specific date, delete `content/<date>.json` before re-running.
 
 ### Repo files you might want to edit
 
@@ -149,6 +166,9 @@ GitHub → **Actions** tab → **Instagram Automation** → **Run workflow** →
 | `INSTAGRAM_CREATE_MEDIA_CONTAINER did not return an id` | Composio response shape changed | Open the workflow log and check the `data` keys; update `publish_instagram.py` accordingly |
 | Workflow runs but no post appears | Account not connected or insufficient permissions | Re-do Composio OAuth; ensure `instagram_content_publish` scope was granted |
 | `Image unchanged; no commit needed` | Same date already ran | Expected on retry — history.json will prevent double-publishing |
+| `[WARN] Groq returned HTTP 403` in generate step | `GROQ_API_KEY` is invalid, expired, or account restricted | Verify key at https://console.groq.com/keys; update the `GROQ_API_KEY` GitHub secret. Workflow continues with deterministic fallback. |
+| `[WARN] Groq returned HTTP 429` | Rate limit hit | Will auto-retry on next scheduled run. Free tier: 30 req/min, 14,400 req/day. |
+| `generator: deterministic-fallback` in manifest | Groq was unavailable, fallback used | Check `GROQ_API_KEY` secret. Once fixed, delete the manifest for that date to regenerate. |
 | Workflow fails after push but image is in repo | CDN delay on raw URL | The workflow already waits 20s; if it persists, increase the `sleep 20` in `instagram.yml` |
 
 ---

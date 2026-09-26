@@ -1,23 +1,29 @@
 """
 generate_content.py
 -------------------
-Deterministic daily content generator for the Instagram auto-poster.
+Deterministic + AI-assisted daily content generator for a web design agency's
+Instagram account.
 
 Pipeline:
   1. Pick today's topic from config/topics.yaml (rotates by day-of-year).
-  2. Build a caption + a short list of hashtags from a built-in fact library
-     for that topic. (No external AI API required for v1; an AI_API_KEY hook
-     is provided for future upgrade.)
-  3. Render a deterministic 1080x1080 PNG using Pillow (gradient background +
-     topic title + a one-line fact). The same date always yields the same image,
-     so a workflow re-run is idempotent.
-  4. Write content/<date>.json with {id, date, topic, caption, hashtags, image_file}.
+  2. Pick a seed fact for that topic (rotates by SHA-256 of date).
+  3. If GROQ_API_KEY is set:
+       - Call Groq (OpenAI-compatible /openai/v1/chat/completions endpoint)
+       - Get back a JSON object: { caption, hashtags, image_headline }
+       - On any error (403, network, JSON parse) → fall back to deterministic
+         content built from the seed fact.
+     If GROQ_API_KEY is NOT set:
+       - Use the seed fact verbatim as image_headline and build a default caption.
+  4. Render a 1080x1080 PNG (gradient + topic title + image_headline).
+  5. Write content/<date>.json manifest.
+
+Idempotency:
+  - If content/<date>.json already exists AND has ai_generated=true, the script
+    reuses it (skips the Groq call) — re-running the workflow for the same date
+    won't burn Groq credits or produce a different post.
 
 Usage:
-  python scripts/generate_content.py [--date YYYY-MM-DD] [--out-dir content]
-
-The script only writes to local disk -- it never talks to the network, never
-prints secrets, and is safe to run locally for testing.
+  GROQ_API_KEY=... python scripts/generate_content.py [--date YYYY-MM-DD] [--out-dir content]
 """
 
 from __future__ import annotations
@@ -31,11 +37,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
-# --- Optional dependency: Pillow. We import lazily so the script still loads
-# --- even if Pillow is missing, but rendering will raise a clear error.
+import requests
+
 try:
     from PIL import Image, ImageDraw, ImageFont  # type: ignore
-except ImportError as exc:  # pragma: no cover - exercised in CI
+except ImportError as exc:  # pragma: no cover
     Image = ImageDraw = ImageFont = None  # type: ignore
     _PILLOW_ERR = str(exc)
 else:
@@ -46,108 +52,43 @@ else:
 # Topic rotation
 # ---------------------------------------------------------------------------
 
-# Built-in topic catalogue. Each topic has:
-#   - title: short label
-#   - facts: list of one-liner facts; we rotate by date so the same fact is
-#            returned for a given (topic, day_index)
 DEFAULT_TOPICS: list[dict[str, Any]] = [
     {
-        "title": "Useful Tech Fact",
+        "title": "UX Principle",
         "facts": [
-            "The first webcam was invented at Cambridge University in 1991 to monitor a coffee pot.",
-            "HTTP/3 runs over QUIC, which is built on UDP instead of TCP.",
-            "The average modern smartphone has more computing power than the computers used for the Apollo 11 moon landing.",
-            "SSDs can read data at over 7,000 MB/s, roughly 30x faster than a spinning hard drive.",
-            "USB-C cables can carry up to 240W of power with Power Delivery 3.1.",
-            "The '404' error code is named after room 404 at CERN, where the original web team worked.",
+            "Users scan pages in an F-pattern, not read word-by-word — design for scanning, not reading.",
+            "Hick's Law: more choices = slower decisions. Limit navigation to 5-7 top-level items.",
+            "The 3-click rule is a myth, but the principle holds: don't make users hunt for the next step.",
+            "Average attention span on a homepage is 5-8 seconds. Your hero must communicate value instantly.",
+            "Forms with fewer fields convert better. Remove every field that isn't strictly required.",
+            "Error messages should explain what went wrong and how to fix it — never just say 'Invalid input'.",
         ],
+        "hashtags": ["#uxdesign", "#userexperience", "#webdesign"],
     },
     {
-        "title": "Android Tip",
+        "title": "Conversion Tip",
         "facts": [
-            "Long-pressing a notification on Android lets you silence or customize it per-app.",
-            "Gboard's clipboard manager keeps text you copy for up to 1 hour -- enable it from the toolbar.",
-            "Android 14's Flash Notifications setting can blink your camera flash for incoming calls.",
-            "You can run two copies of the same app with Android's 'Dual Messenger' / 'App Cloner' features.",
-            "Developer Options > 'Smallest width' lets you fit more content on screen by tweaking DPI.",
-            "Android's 'Nearby Share' works offline using Bluetooth + Wi-Fi Direct, no internet required.",
+            "A single, prominent CTA button outperforms multiple competing CTAs by up to 371%.",
+            "Page load time under 2 seconds lifts conversion rates by 15-20% on mobile.",
+            "Trust signals near the CTA reduce bounce and lift form completion.",
+            "Above-the-fold content drives 80% of first impressions — don't waste it on carousels.",
+            "Whitespace around a CTA increases click-through rate by roughly 20%.",
+            "Social proof above the fold increases form submissions by 15-30%.",
         ],
-    },
-    {
-        "title": "AI Tool Highlight",
-        "facts": [
-            "Whisper by OpenAI can transcribe 1 hour of audio in under 2 minutes on a modern GPU.",
-            "Stable Diffusion can run entirely offline on a 6GB VRAM GPU once the model is downloaded.",
-            "LocalAI lets you serve OpenAI-compatible APIs from your own hardware, with no data leaving your machine.",
-            "Ollama can run Llama 3.1 8B locally with as little as 8GB of RAM using 4-bit quantization.",
-            "sentence-transformers can index 1M documents for semantic search in under 1GB of RAM.",
-            "Hugging Face Hub hosts over 1 million open models -- you can clone any of them with git-lfs.",
-        ],
-    },
-    {
-        "title": "Programming Fact",
-        "facts": [
-            "Python's `else` clause runs after a `for` loop finishes without hitting `break`.",
-            "In JavaScript, `typeof null === 'object'` is a long-standing bug that can't be fixed without breaking the web.",
-            "Rust's borrow checker prevents data races at compile time, with zero runtime cost.",
-            "Git was created by Linus Torvalds in 2005; he named it after himself ('git' is British slang for an unpleasant person).",
-            "The `null` reference was called 'my billion-dollar mistake' by its inventor, Tony Hoare.",
-            "UTF-8 was designed by Ken Thompson and Rob Pike in a single evening on a placemat over dinner.",
-        ],
-    },
-    {
-        "title": "Cybersecurity Tip",
-        "facts": [
-            "A password manager eliminates reuse -- pick one long master password and let it generate the rest.",
-            "Enable hardware-based 2FA (a security key) for email and password manager accounts; SMS codes can be SIM-swapped.",
-            "Check `haveibeenpwned.com` to see if your email appears in known data breaches.",
-            "Update your router firmware at least twice a year -- many home routers never receive auto-updates.",
-            "DNS-over-HTTPS (DoH) prevents your ISP from seeing which domains you look up.",
-            "Disable macro execution by default in office apps; most document-based malware needs macros enabled.",
-        ],
-    },
-    {
-        "title": "Useful Website",
-        "facts": [
-            "archive.org has snapshots of the web going back to 1996 -- type any URL to see its history.",
-            "wikipedia.org's 'Random Article' button is the rabbit hole of all rabbit holes.",
-            "oa.mg lets you search 250M+ open-access research papers for free.",
-            "news.ycombinator.com surfaces tech discussions before they reach mainstream media.",
-            "remove.bg strips image backgrounds in one click, no signup needed for low-res output.",
-            "excalidraw.com is a free hand-drawn-style whiteboard that runs in the browser.",
-        ],
-    },
-    {
-        "title": "Developer Trick",
-        "facts": [
-            "In VS Code, Ctrl+Shift+P opens the Command Palette -- almost every action is reachable from there.",
-            "Git's `reflog` records every HEAD move; even a bad `reset --hard` is usually recoverable.",
-            "`jq` can transform JSON in pipes: `curl -s url | jq '.data[] | .name'`.",
-            "Python's `if __name__ == '__main__':` lets a file be both importable and runnable.",
-            "SSH config file (~/.ssh/config) lets you alias hosts so `ssh prod` just works.",
-            "Docker's `--restart unless-stopped` policy auto-restarts containers after reboots but not after manual stops.",
-        ],
+        "hashtags": ["#conversion", "#cro", "#webdesign"],
     },
 ]
 
 
 def load_topics() -> list[dict[str, Any]]:
-    """Load topics from config/topics.yaml if present, else use DEFAULT_TOPICS.
-
-    The YAML file is optional -- we ship it as topics.example.yaml and copy it
-    on first run. This keeps the script self-contained.
-    """
     topics_path = Path(__file__).resolve().parent.parent / "config" / "topics.yaml"
     if not topics_path.exists():
         return DEFAULT_TOPICS
-
     try:
         import yaml  # type: ignore
     except ImportError:
-        # Fall back to defaults if PyYAML is missing
         print("[INFO] config/topics.yaml exists but PyYAML is not installed; using built-in topics")
         return DEFAULT_TOPICS
-
     with topics_path.open("r", encoding="utf-8") as fh:
         data = yaml.safe_load(fh)
     if not data or "topics" not in data:
@@ -157,21 +98,12 @@ def load_topics() -> list[dict[str, Any]]:
 
 
 def pick_topic_and_fact(date: dt.date) -> tuple[dict[str, Any], str, int]:
-    """Rotate topics by day-of-year and pick a fact by hashing the date.
-
-    Returns (topic, fact, fact_index).
-    """
     topics = load_topics()
     if not topics:
         raise RuntimeError("No topics available")
-
-    # Rotate topics daily
     day_of_year = date.timetuple().tm_yday
     topic_index = day_of_year % len(topics)
     topic = topics[topic_index]
-
-    # Rotate facts within the topic by a stable hash of the date.
-    # The same date always yields the same fact.
     date_hash = int(hashlib.sha256(date.isoformat().encode()).hexdigest(), 16)
     facts = topic.get("facts") or []
     if not facts:
@@ -181,53 +113,146 @@ def pick_topic_and_fact(date: dt.date) -> tuple[dict[str, Any], str, int]:
 
 
 # ---------------------------------------------------------------------------
-# Caption + hashtags
+# Groq AI integration (OpenAI-compatible /openai/v1/chat/completions endpoint)
 # ---------------------------------------------------------------------------
 
-def build_caption(topic: dict[str, Any], fact: str) -> str:
-    """Build a clean, non-spammy caption."""
-    title = topic.get("title", "Daily Fact")
-    return f"{title}\n\n{fact}\n\nFollow for a new useful fact every day."
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_TIMEOUT_SECONDS = 30
 
 
-def build_hashtags(topic: dict[str, Any]) -> list[str]:
-    """3-5 relevant hashtags per post."""
-    base = {
-        "Useful Tech Fact": ["#technology", "#tech", "#techfacts"],
-        "Android Tip": ["#android", "#androidtips", "#techhacks"],
-        "AI Tool Highlight": ["#ai", "#aitools", "#machinelearning"],
-        "Programming Fact": ["#programming", "#coding", "#developer"],
-        "Cybersecurity Tip": ["#cybersecurity", "#infosec", "#securitytips"],
-        "Useful Website": ["#websites", "#tools", "#productivity"],
-        "Developer Trick": ["#devtips", "#programming", "#tools"],
+def generate_with_groq(topic_title: str, seed_fact: str) -> dict[str, Any] | None:
+    """Call Groq to expand a seed fact into an Instagram-ready package.
+
+    Returns { caption, hashtags, image_headline } on success, or None on any
+    failure (network, 4xx/5xx, JSON parse). Caller must fall back gracefully.
+    """
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key or not api_key.strip():
+        return None
+
+    system_prompt = (
+        "You are the social media manager for a web design agency. Your job is to "
+        "turn a short technical fact about web design / UX / conversion into an "
+        "Instagram post that educates potential clients and positions the agency "
+        "as an expert. Be concise, useful, and never spammy. Avoid engagement-bait, "
+        "exaggerated claims, or fake urgency."
+    )
+    user_prompt = f"""Topic: {topic_title}
+Seed fact: {seed_fact}
+
+Write an Instagram post for a web design agency's account. Return STRICT JSON
+with these keys (and no others):
+
+{{
+  "image_headline": "A short punchy headline (5-8 words) to render on the image itself. No emojis. No hashtags. Plain text only.",
+  "caption": "An Instagram caption (120-220 chars). Start with a hook line, then explain the tip in 1-2 sentences, end with a soft CTA like 'Save this for your next redesign.' or 'Follow for daily web design tips.' No emojis. Hashtags go separately.",
+  "hashtags": ["3 to 5 relevant hashtags, each starting with #, lowercased, no spaces"]
+}}
+
+Rules:
+- The image_headline must be a different phrasing from the seed fact (shorter, punchier).
+- The caption must NOT repeat the image_headline verbatim.
+- No emoji anywhere. No mention of 'AI' or 'generated'.
+- Pure JSON only. No markdown fences. No prose before or after."""
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
     }
-    title = topic.get("title", "")
-    tags = base.get(title, ["#tech", "#daily", "#facts"])
-    # Pull tags from the topic if explicitly provided
-    if topic.get("hashtags"):
-        tags = list(topic["hashtags"])[:5]
-    return tags
+    body = {
+        "model": GROQ_MODEL,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        "max_tokens": 600,
+        "temperature": 0.7,
+        "response_format": {"type": "json_object"},
+    }
+
+    print(f"[INFO] Calling Groq ({GROQ_MODEL})...")
+    try:
+        resp = requests.post(GROQ_API_URL, headers=headers, json=body, timeout=GROQ_TIMEOUT_SECONDS)
+    except requests.RequestException as exc:
+        print(f"[WARN] Groq network error: {exc}. Falling back to deterministic content.")
+        return None
+
+    if resp.status_code != 200:
+        # Don't print the response body — could leak key info via echoed headers
+        print(f"[WARN] Groq returned HTTP {resp.status_code}. Falling back to deterministic content.")
+        if resp.status_code == 403:
+            print("[INFO] HTTP 403 usually means the API key is invalid, expired, or the account is restricted.")
+            print("[INFO] Check your key at https://console.groq.com/keys and update the GROQ_API_KEY GitHub secret.")
+        elif resp.status_code == 429:
+            print("[INFO] HTTP 429 = rate limit. Will retry on next run.")
+        return None
+
+    try:
+        data = resp.json()
+        content = data["choices"][0]["message"]["content"]
+    except (ValueError, KeyError, IndexError) as exc:
+        print(f"[WARN] Groq response was unparseable: {exc}. Falling back.")
+        return None
+
+    try:
+        parsed = json.loads(content)
+    except json.JSONDecodeError as exc:
+        print(f"[WARN] Groq returned non-JSON content: {exc}. Falling back.")
+        return None
+
+    # Validate the shape
+    required_keys = {"image_headline", "caption", "hashtags"}
+    if not required_keys.issubset(parsed.keys()):
+        print(f"[WARN] Groq JSON missing keys. Got: {list(parsed.keys())}. Falling back.")
+        return None
+    if not isinstance(parsed["hashtags"], list) or not all(isinstance(h, str) for h in parsed["hashtags"]):
+        print("[WARN] Groq hashtags field is malformed. Falling back.")
+        return None
+
+    print("[INFO] Groq generation OK")
+    return {
+        "image_headline": str(parsed["image_headline"]).strip(),
+        "caption": str(parsed["caption"]).strip(),
+        "hashtags": [str(h).strip() for h in parsed["hashtags"]][:5],
+    }
 
 
 # ---------------------------------------------------------------------------
-# Image rendering (deterministic)
+# Deterministic fallback (used when Groq is unavailable or fails)
 # ---------------------------------------------------------------------------
 
-# Color palette per topic -- used for the gradient background.
-# Chosen to be Instagram-friendly (high contrast, not too saturated).
+def build_deterministic_caption(topic: dict[str, Any], fact: str) -> dict[str, Any]:
+    """Build image_headline + caption + hashtags from the seed fact directly."""
+    title = topic.get("title", "Daily Tip")
+    # Headline: take the first 6-8 words of the fact for the image overlay
+    words = fact.replace("—", " ").split()
+    headline = " ".join(words[:7]) + ("..." if len(words) > 7 else "")
+    caption = f"{title}\n\n{fact}\n\nFollow for daily web design tips from our agency."
+    hashtags = topic.get("hashtags") or ["#webdesign", "#ux", "#agency"]
+    return {
+        "image_headline": headline,
+        "caption": caption,
+        "hashtags": list(hashtags)[:5],
+    }
+
+
+# ---------------------------------------------------------------------------
+# Image rendering (unchanged from v1 — 1080x1080 gradient + title + headline)
+# ---------------------------------------------------------------------------
+
 TOPIC_COLORS: dict[str, tuple[tuple[int, int, int], tuple[int, int, int]]] = {
-    "Useful Tech Fact":     ((20, 30, 80), (80, 30, 130)),
-    "Android Tip":          ((10, 80, 60), (40, 160, 120)),
-    "AI Tool Highlight":    ((80, 20, 80), (180, 30, 120)),
-    "Programming Fact":     ((30, 30, 50), (60, 100, 180)),
-    "Cybersecurity Tip":    ((60, 10, 30), (140, 30, 60)),
-    "Useful Website":       ((20, 60, 80), (60, 140, 160)),
-    "Developer Trick":      ((40, 20, 80), (120, 60, 180)),
+    "UX Principle":         ((20, 30, 80), (80, 30, 130)),
+    "Conversion Tip":       ((10, 80, 60), (40, 160, 120)),
+    "Typography Tip":       ((80, 20, 80), (180, 30, 120)),
+    "Color & Visual Design":((40, 20, 80), (120, 60, 180)),
+    "Page Speed":           ((30, 30, 50), (60, 100, 180)),
+    "Mobile-First":         ((20, 60, 80), (60, 140, 160)),
+    "SEO Foundation":       ((60, 10, 30), (140, 30, 60)),
 }
 
 
 def _find_font(size: int) -> Any:
-    """Try to locate a TTF font on the runner; fall back to default bitmap."""
     candidates = [
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
         "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
@@ -242,12 +267,10 @@ def _find_font(size: int) -> Any:
                 return ImageFont.truetype(path, size)
             except Exception:
                 continue
-    # Last resort: PIL's default (bitmap, ugly but works)
     return ImageFont.load_default()
 
 
 def _wrap_text(text: str, font: Any, draw: Any, max_width: int) -> list[str]:
-    """Greedy word-wrap to fit max_width pixels."""
     words = text.split()
     lines: list[str] = []
     current = ""
@@ -268,24 +291,15 @@ def _wrap_text(text: str, font: Any, draw: Any, max_width: int) -> list[str]:
     return lines
 
 
-def render_image(out_path: Path, topic: dict[str, Any], fact: str, date: dt.date) -> None:
-    """Render a 1080x1080 PNG (Instagram square format).
-
-    Layout:
-      - Vertical gradient background
-      - Topic title (top, large, bold)
-      - Fact text (center, wrapped)
-      - Date footer
-    """
+def render_image(out_path: Path, topic: dict[str, Any], headline: str, date: dt.date) -> None:
     if Image is None:
         raise RuntimeError(f"Pillow is required to render images: {_PILLOW_ERR}")
 
     size = 1080
-    title = topic.get("title", "Daily Fact")
+    title = topic.get("title", "Daily Tip")
     color_pair = TOPIC_COLORS.get(title, ((30, 30, 60), (60, 60, 120)))
     top_color, bottom_color = color_pair
 
-    # Build the gradient by interpolating row-by-row (slow but only 1080 rows)
     img = Image.new("RGB", (size, size), top_color)
     pixels = img.load()
     for y in range(size):
@@ -297,54 +311,40 @@ def render_image(out_path: Path, topic: dict[str, Any], fact: str, date: dt.date
             pixels[x, y] = (r, g, b)
 
     draw = ImageDraw.Draw(img)
-
-    # Title
     title_font = _find_font(64)
     title_x = 80
     title_y = 120
     draw.text((title_x, title_y), title, font=title_font, fill=(255, 255, 255))
-
-    # Accent line under title
     draw.rectangle([(title_x, title_y + 90), (title_x + 200, title_y + 96)], fill=(255, 255, 255))
 
-    # Fact text (wrapped, centered horizontally, vertically below title)
-    fact_font = _find_font(52)
-    max_text_width = size - 160  # 80px margin each side
-    lines = _wrap_text(fact, fact_font, draw, max_text_width)
-
-    line_height = 70
+    # Headline (wrapped, centered)
+    headline_font = _find_font(56)
+    max_text_width = size - 160
+    lines = _wrap_text(headline, headline_font, draw, max_text_width)
+    line_height = 76
     total_height = line_height * len(lines)
-    y_start = (size - total_height) // 2 + 60  # nudge slightly below center
+    y_start = (size - total_height) // 2 + 60
     for i, line in enumerate(lines):
-        draw.text((title_x, y_start + i * line_height), line, font=fact_font, fill=(240, 240, 240))
+        draw.text((title_x, y_start + i * line_height), line, font=headline_font, fill=(240, 240, 240))
 
-    # Footer: date + brand
     footer_font = _find_font(32)
-    footer_text = f"{date.isoformat()}  -  Daily Auto-Posted Fact"
+    footer_text = f"{date.isoformat()}  -  Web Design Agency"
     draw.text((title_x, size - 100), footer_text, font=footer_font, fill=(220, 220, 220))
 
-    # Save as PNG (lossless, large but always accepted by Instagram)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     img.save(out_path, "PNG", optimize=True)
-
-
-# ---------------------------------------------------------------------------
-# Content ID (for idempotency)
-# ---------------------------------------------------------------------------
-
-def content_id(date: dt.date) -> str:
-    """A deterministic ID for the day's content. The same date always yields the
-    same ID, so a workflow retry will detect 'already published' and skip.
-    """
-    return date.isoformat()
 
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
+def content_id(date: dt.date) -> str:
+    return date.isoformat()
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate deterministic daily Instagram content.")
+    parser = argparse.ArgumentParser(description="Generate daily Instagram content for a web design agency.")
     parser.add_argument("--date", help="Override date as YYYY-MM-DD (defaults to today UTC).")
     parser.add_argument("--out-dir", default="content", help="Output directory (default: content)")
     args = parser.parse_args()
@@ -363,35 +363,72 @@ def main() -> int:
     images_dir = out_dir / "images"
     images_dir.mkdir(exist_ok=True)
 
-    print(f"[INFO] Generating content for {date.isoformat()}")
+    manifest_path = out_dir / f"{date.isoformat()}.json"
 
+    # IDEMPOTENCY: if manifest already exists and was AI-generated, reuse it
+    # (avoids burning Groq credits on workflow re-runs)
+    if manifest_path.exists():
+        try:
+            existing = json.loads(manifest_path.read_text(encoding="utf-8"))
+            if existing.get("id") == content_id(date) and existing.get("ai_generated"):
+                print(f"[INFO] Manifest {manifest_path} already exists and is AI-generated. Reusing (idempotency).")
+                image_path = images_dir / existing.get("image_filename", f"{date.isoformat()}.png")
+                if image_path.exists():
+                    print(f"[INFO] Image already rendered: {image_path}")
+                    return 0
+                # Image missing but manifest present — re-render from manifest
+                render_image(image_path, {"title": existing.get("topic", "")},
+                             existing.get("image_headline", existing.get("fact", "")), date)
+                print(f"[INFO] Image re-rendered: {image_path}")
+                return 0
+        except (json.JSONDecodeError, OSError):
+            pass  # fall through to fresh generation
+
+    print(f"[INFO] Generating content for {date.isoformat()}")
     topic, fact, fact_index = pick_topic_and_fact(date)
     print(f"[INFO] Topic: {topic['title']} (fact #{fact_index + 1})")
+    print(f"[INFO] Seed fact: {fact}")
 
-    caption = build_caption(topic, fact)
-    hashtags = build_hashtags(topic)
-    full_caption = caption + "\n\n" + " ".join(hashtags)
+    # Try Groq; fall back to deterministic content on any error
+    ai_result = generate_with_groq(topic["title"], fact)
+    if ai_result is not None:
+        image_headline = ai_result["image_headline"]
+        caption = ai_result["caption"]
+        hashtags = ai_result["hashtags"]
+        ai_generated = True
+        full_caption = caption + "\n\n" + " ".join(hashtags)
+    else:
+        det = build_deterministic_caption(topic, fact)
+        image_headline = det["image_headline"]
+        caption = det["caption"]
+        hashtags = det["hashtags"]
+        ai_generated = False
+        full_caption = caption + "\n\n" + " ".join(hashtags)
 
     image_filename = f"{date.isoformat()}.png"
     image_path = images_dir / image_filename
-    render_image(image_path, topic, fact, date)
+    render_image(image_path, topic, image_headline, date)
     print(f"[INFO] Image written: {image_path} ({image_path.stat().st_size} bytes)")
 
     manifest = {
         "id": content_id(date),
         "date": date.isoformat(),
         "topic": topic["title"],
-        "fact": fact,
+        "seed_fact": fact,
+        "image_headline": image_headline,
         "caption": full_caption,
         "hashtags": hashtags,
-        "image_file": str(image_path.relative_to(out_dir.parent)) if out_dir.parent.exists() else str(image_path),
+        "image_file": f"content/images/{image_filename}",
         "image_filename": image_filename,
+        "ai_generated": ai_generated,
+        "generator": "groq" if ai_generated else "deterministic-fallback",
     }
 
-    manifest_path = out_dir / f"{date.isoformat()}.json"
     with manifest_path.open("w", encoding="utf-8") as fh:
         json.dump(manifest, fh, indent=2, ensure_ascii=False)
     print(f"[INFO] Manifest written: {manifest_path}")
+    print(f"[INFO] Generator: {manifest['generator']}")
+    print(f"[INFO] Image headline: {image_headline}")
     print(f"[INFO] Caption preview:\n{full_caption}")
     return 0
 
