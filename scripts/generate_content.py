@@ -118,11 +118,12 @@ def pick_topic_and_fact(date: dt.date) -> tuple[dict[str, Any], str, int]:
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_MODELS_URL = "https://api.groq.com/openai/v1/models"
-# Default model — updated Sept 2026. Groq deprecated llama-3.3-70b-versatile
-# and llama-3.1-8b-instant in 2026; Llama 4 Scout is the recommended successor.
+# Default model — verified available on the user's Groq account Sept 26, 2026.
+# Groq has fully migrated to gpt-oss + qwen + llama-prompt-guard lineups;
+# legacy llama-3.x models are deprecated.
 # Override with the GROQ_MODEL env var if you want a different model.
-GROQ_DEFAULT_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
-GROQ_TIMEOUT_SECONDS = 30
+GROQ_DEFAULT_MODEL = "openai/gpt-oss-120b"
+GROQ_TIMEOUT_SECONDS = 45  # gpt-oss-120b is larger; allow more time
 
 
 def _list_groq_models(api_key: str) -> list[str] | None:
