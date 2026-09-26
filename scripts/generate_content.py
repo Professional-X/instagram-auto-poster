@@ -117,8 +117,34 @@ def pick_topic_and_fact(date: dt.date) -> tuple[dict[str, Any], str, int]:
 # ---------------------------------------------------------------------------
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODELS_URL = "https://api.groq.com/openai/v1/models"
+# Default model — updated Sept 2026. Groq deprecated llama-3.3-70b-versatile
+# and llama-3.1-8b-instant in 2026; Llama 4 Scout is the recommended successor.
+# Override with the GROQ_MODEL env var if you want a different model.
+GROQ_DEFAULT_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
 GROQ_TIMEOUT_SECONDS = 30
+
+
+def _list_groq_models(api_key: str) -> list[str] | None:
+    """Call GET /v1/models. Returns sorted list of model IDs, or None on error.
+
+    Used for diagnostics when a chat completion returns 404 (model not found).
+    """
+    try:
+        resp = requests.get(
+            GROQ_MODELS_URL,
+            headers={"Authorization": f"Bearer {api_key}"},
+            timeout=15,
+        )
+    except requests.RequestException:
+        return None
+    if resp.status_code != 200:
+        return None
+    try:
+        data = resp.json()
+        return sorted(m["id"] for m in data.get("data", []) if "id" in m)
+    except (ValueError, KeyError):
+        return None
 
 
 def generate_with_groq(topic_title: str, seed_fact: str) -> dict[str, Any] | None:
@@ -130,6 +156,9 @@ def generate_with_groq(topic_title: str, seed_fact: str) -> dict[str, Any] | Non
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key or not api_key.strip():
         return None
+
+    # Allow override; fall back to default
+    model = os.environ.get("GROQ_MODEL") or GROQ_DEFAULT_MODEL
 
     system_prompt = (
         "You are the social media manager for a web design agency. Your job is to "
@@ -160,30 +189,48 @@ Rules:
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
     }
-    body = {
-        "model": GROQ_MODEL,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        "max_tokens": 600,
-        "temperature": 0.7,
-        "response_format": {"type": "json_object"},
-    }
 
-    print(f"[INFO] Calling Groq ({GROQ_MODEL})...")
-    try:
-        resp = requests.post(GROQ_API_URL, headers=headers, json=body, timeout=GROQ_TIMEOUT_SECONDS)
-    except requests.RequestException as exc:
-        print(f"[WARN] Groq network error: {exc}. Falling back to deterministic content.")
-        return None
+    # Llama 4 models may not support response_format json_object. Try with it
+    # first; if 400, retry without it (we'll parse JSON from content ourselves).
+    for use_json_mode in (True, False):
+        body = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            "max_tokens": 600,
+            "temperature": 0.7,
+        }
+        if use_json_mode:
+            body["response_format"] = {"type": "json_object"}
+
+        print(f"[INFO] Calling Groq (model={model}, json_mode={use_json_mode})...")
+        try:
+            resp = requests.post(GROQ_API_URL, headers=headers, json=body, timeout=GROQ_TIMEOUT_SECONDS)
+        except requests.RequestException as exc:
+            print(f"[WARN] Groq network error: {exc}. Falling back to deterministic content.")
+            return None
+
+        if resp.status_code == 400 and use_json_mode:
+            # Some models don't support response_format. Retry without it.
+            print("[INFO] Groq rejected json_mode (400). Retrying without response_format...")
+            continue
+        break
 
     if resp.status_code != 200:
-        # Don't print the response body — could leak key info via echoed headers
         print(f"[WARN] Groq returned HTTP {resp.status_code}. Falling back to deterministic content.")
         if resp.status_code == 403:
-            print("[INFO] HTTP 403 usually means the API key is invalid, expired, or the account is restricted.")
-            print("[INFO] Check your key at https://console.groq.com/keys and update the GROQ_API_KEY GitHub secret.")
+            print("[INFO] HTTP 403 = key invalid/expired OR IP blocked. Update GROQ_API_KEY secret.")
+        elif resp.status_code == 404:
+            print(f"[INFO] HTTP 404 = model '{model}' not found or deprecated.")
+            # List available models for diagnostics
+            available = _list_groq_models(api_key)
+            if available:
+                print(f"[INFO] Available models on your account ({len(available)}): {', '.join(available[:15])}")
+                print("[INFO] Set the GROQ_MODEL env var / secret to one of the above.")
+            else:
+                print("[INFO] Could not list available models (key may be invalid).")
         elif resp.status_code == 429:
             print("[INFO] HTTP 429 = rate limit. Will retry on next run.")
         return None
@@ -195,13 +242,20 @@ Rules:
         print(f"[WARN] Groq response was unparseable: {exc}. Falling back.")
         return None
 
+    # Strip markdown fences if model didn't honor json_mode
+    content = content.strip()
+    if content.startswith("```"):
+        lines = content.split("\n")
+        # Remove first line (```json) and last line (```)
+        lines = [l for l in lines if not l.strip().startswith("```")]
+        content = "\n".join(lines).strip()
+
     try:
         parsed = json.loads(content)
     except json.JSONDecodeError as exc:
         print(f"[WARN] Groq returned non-JSON content: {exc}. Falling back.")
         return None
 
-    # Validate the shape
     required_keys = {"image_headline", "caption", "hashtags"}
     if not required_keys.issubset(parsed.keys()):
         print(f"[WARN] Groq JSON missing keys. Got: {list(parsed.keys())}. Falling back.")
@@ -210,7 +264,7 @@ Rules:
         print("[WARN] Groq hashtags field is malformed. Falling back.")
         return None
 
-    print("[INFO] Groq generation OK")
+    print(f"[INFO] Groq generation OK (model={model})")
     return {
         "image_headline": str(parsed["image_headline"]).strip(),
         "caption": str(parsed["caption"]).strip(),
