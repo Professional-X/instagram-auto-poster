@@ -1,15 +1,22 @@
 {
   "id": "2026-09-26",
   "date": "2026-09-26",
-  "topic": "Programming Fact",
-  "fact": "Rust's borrow checker prevents data races at compile time, with zero runtime cost.",
-  "caption": "Programming Fact\n\nRust's borrow checker prevents data races at compile time, with zero runtime cost.\n\nFollow for a new useful fact every day.\n\n#programming #coding #developer",
+  "topic": "Signs You Need A Redesign",
+  "seed_fact": "If your bounce rate is above 60%, your site is confusing visitors. Time for a redesign.",
+  "image_headline": "Visitors Leaving Too Fast?",
+  "caption": "Your website’s bounce rate is over 60%? That means most visitors leave before seeing what you offer. A confusing layout or slow load can cost you sales. Let’s fix it so customers stay and convert. DM me for a free site audit.\n\n#webdesign #smallbusiness #websiteaudit #websiteredesign #freelancewebdesigner",
   "hashtags": [
-    "#programming",
-    "#coding",
-    "#developer"
+    "#webdesign",
+    "#smallbusiness",
+    "#websiteaudit",
+    "#websiteredesign",
+    "#freelancewebdesigner"
   ],
   "image_file": "content/images/2026-09-26.png",
   "image_filename": "2026-09-26.png",
-  "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/a465e139bbae68b1a589f77ee03053cbb3872426/content/images/2026-09-26.png"
+  "ai_generated": true,
+  "generator": "groq",
+  "image_style": "minimalist_white",
+  "style_index": 2,
+  "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/fdaeeadf96fb6d6776a707d92077f005dfe93a5a/content/images/2026-09-26.png"
 }
