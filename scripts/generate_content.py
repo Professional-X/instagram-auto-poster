@@ -328,30 +328,85 @@ def build_deterministic_caption(topic: dict[str, Any], fact: str) -> dict[str, A
 
 
 # ---------------------------------------------------------------------------
-# Image rendering (unchanged from v1 — 1080x1080 gradient + title + headline)
+# Image rendering — 6 distinct visual styles, rotated daily
 # ---------------------------------------------------------------------------
 
-TOPIC_COLORS: dict[str, tuple[tuple[int, int, int], tuple[int, int, int]]] = {
-    "UX Principle":         ((20, 30, 80), (80, 30, 130)),
-    "Conversion Tip":       ((10, 80, 60), (40, 160, 120)),
-    "Typography Tip":       ((80, 20, 80), (180, 30, 120)),
-    "Color & Visual Design":((40, 20, 80), (120, 60, 180)),
-    "Page Speed":           ((30, 30, 50), (60, 100, 180)),
-    "Mobile-First":         ((20, 60, 80), (60, 140, 160)),
-    "SEO Foundation":       ((60, 10, 30), (140, 30, 60)),
+# Per-topic color palette: primary / accent / dark / light.
+# Each topic gets a unique palette so the brand color shifts through the week.
+TOPIC_PALETTES: dict[str, dict[str, tuple[int, int, int]]] = {
+    "Why You Need A Website": {
+        "primary": (20, 30, 80), "accent": (255, 196, 0),
+        "dark": (15, 20, 50), "light": (245, 245, 250),
+    },
+    "Website Mistakes Losing You Clients": {
+        "primary": (140, 30, 60), "accent": (255, 220, 100),
+        "dark": (60, 10, 30), "light": (250, 240, 240),
+    },
+    "What A Website Really Costs": {
+        "primary": (10, 80, 60), "accent": (240, 200, 80),
+        "dark": (5, 40, 30), "light": (240, 250, 245),
+    },
+    "Signs You Need A Redesign": {
+        "primary": (80, 30, 130), "accent": (255, 180, 80),
+        "dark": (40, 15, 70), "light": (245, 240, 250),
+    },
+    "WordPress vs Wix vs Custom": {
+        "primary": (180, 60, 30), "accent": (60, 80, 160),
+        "dark": (80, 30, 15), "light": (252, 245, 240),
+    },
+    "How Long A Website Takes": {
+        "primary": (20, 70, 110), "accent": (255, 100, 80),
+        "dark": (10, 35, 55), "light": (240, 248, 252),
+    },
+    "Local SEO For Small Business": {
+        "primary": (50, 70, 50), "accent": (240, 180, 60),
+        "dark": (25, 35, 25), "light": (245, 248, 240),
+    },
+}
+
+DEFAULT_PALETTE: dict[str, tuple[int, int, int]] = {
+    "primary": (30, 30, 60), "accent": (255, 196, 0),
+    "dark": (15, 15, 30), "light": (245, 245, 250),
 }
 
 
-def _find_font(size: int) -> Any:
-    candidates = [
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
-        "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf",
-    ]
+def _palette_for(topic_title: str) -> dict[str, tuple[int, int, int]]:
+    return TOPIC_PALETTES.get(topic_title, DEFAULT_PALETTE)
+
+
+def _load_font(size: int, family: str = "sans-bold") -> Any:
+    """Load a font by family. Falls back gracefully.
+
+    family options: sans-bold, sans-regular, sans-italic, serif-bold,
+    serif-regular, serif-italic, mono-bold, mono-regular.
+    """
+    candidates = {
+        "sans-bold":     ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                          "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+                          "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf"],
+        "sans-regular":  ["/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                          "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+                          "/usr/share/fonts/truetype/freefont/FreeSans.ttf"],
+        "sans-italic":   ["/usr/share/fonts/truetype/liberation/LiberationSans-Italic.ttf",
+                          "/usr/share/fonts/truetype/freefont/FreeSansOblique.ttf"],
+        "serif-bold":    ["/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
+                          "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf",
+                          "/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf"],
+        "serif-regular": ["/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
+                          "/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf",
+                          "/usr/share/fonts/truetype/freefont/FreeSerif.ttf"],
+        "serif-italic":  ["/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf",
+                          "/usr/share/fonts/truetype/freefont/FreeSerifItalic.ttf"],
+        "mono-bold":     ["/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf",
+                          "/usr/share/fonts/truetype/liberation/LiberationMono-Bold.ttf",
+                          "/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf"],
+        "mono-regular":  ["/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+                          "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",
+                          "/usr/share/fonts/truetype/freefont/FreeMono.ttf"],
+    }
     if ImageFont is None:
         return None
-    for path in candidates:
+    for path in candidates.get(family, candidates["sans-bold"]):
         if os.path.exists(path):
             try:
                 return ImageFont.truetype(path, size)
@@ -381,48 +436,236 @@ def _wrap_text(text: str, font: Any, draw: Any, max_width: int) -> list[str]:
     return lines
 
 
-def render_image(out_path: Path, topic: dict[str, Any], headline: str, date: dt.date) -> None:
+def _text_width(draw: Any, text: str, font: Any) -> int:
+    try:
+        bbox = draw.textbbox((0, 0), text, font=font)
+        return bbox[2] - bbox[0]
+    except Exception:
+        return len(text) * (font.size if hasattr(font, "size") else 10) * 0.55
+
+
+def _vertical_gradient(img: Any, top_color: tuple, bottom_color: tuple) -> None:
+    """Paint a vertical gradient onto img (in-place)."""
+    h = img.size[1]
+    pixels = img.load()
+    for y in range(h):
+        t = y / (h - 1)
+        r = int(top_color[0] + (bottom_color[0] - top_color[0]) * t)
+        g = int(top_color[1] + (bottom_color[1] - top_color[1]) * t)
+        b = int(top_color[2] + (bottom_color[2] - top_color[2]) * t)
+        for x in range(img.size[0]):
+            pixels[x, y] = (r, g, b)
+
+
+# --- Style 1: gradient_centered --- vertical gradient, large centered headline
+def _render_gradient_centered(img, draw, topic, headline, date, palette):
+    size = img.size[0]
+    title = topic.get("title", "Daily Tip")
+    _vertical_gradient(img, palette["primary"], palette["dark"])
+    title_font = _load_font(60, "sans-bold")
+    draw.text((80, 110), title, font=title_font, fill=palette["light"])
+    draw.rectangle([(80, 195), (300, 200)], fill=palette["accent"])
+    headline_font = _load_font(64, "sans-bold")
+    lines = _wrap_text(headline, headline_font, draw, size - 160)
+    line_h = 80
+    y_start = (size - line_h * len(lines)) // 2 + 50
+    for i, line in enumerate(lines):
+        draw.text((80, y_start + i * line_h), line, font=headline_font, fill=palette["light"])
+    footer_font = _load_font(28, "mono-regular")
+    draw.text((80, size - 90), f"{date.isoformat()}  ·  DM for website work",
+              font=footer_font, fill=palette["light"])
+
+
+# --- Style 2: split_block --- left color panel + vertical topic label,
+#     right white panel with serif headline. Editorial feel.
+def _render_split_block(img, draw, topic, headline, date, palette):
+    size = img.size[0]
+    title = topic.get("title", "Daily Tip")
+    draw.rectangle([(0, 0), (size, size)], fill=palette["light"])
+    split_x = int(size * 0.40)
+    draw.rectangle([(0, 0), (split_x, size)], fill=palette["primary"])
+    # Vertical topic label (one char per line)
+    label_font = _load_font(40, "sans-bold")
+    char_y = 90
+    for ch in title.upper():
+        draw.text((split_x // 2 - 18, char_y), ch, font=label_font, fill=palette["accent"])
+        char_y += 50
+    draw.rectangle([(split_x // 2 - 4, size - 280), (split_x // 2 + 4, size - 80)],
+                   fill=palette["accent"])
+    headline_font = _load_font(58, "serif-bold")
+    lines = _wrap_text(headline, headline_font, draw, size - split_x - 100)
+    line_h = 72
+    y_start = (size - line_h * len(lines)) // 2
+    for i, line in enumerate(lines):
+        draw.text((split_x + 60, y_start + i * line_h), line,
+                  font=headline_font, fill=palette["dark"])
+    footer_font = _load_font(24, "mono-regular")
+    draw.text((split_x + 60, size - 90), f"{date.isoformat()}  ·  DM for website work",
+              font=footer_font, fill=palette["primary"])
+
+
+# --- Style 3: minimalist_white --- mostly white, thin accent bar,
+#     small uppercase topic label, large centered headline. Apple-keynote feel.
+def _render_minimalist_white(img, draw, topic, headline, date, palette):
+    size = img.size[0]
+    title = topic.get("title", "Daily Tip")
+    draw.rectangle([(0, 0), (size, size)], fill=(252, 252, 250))
+    draw.rectangle([(0, 0), (size, 10)], fill=palette["primary"])
+    draw.rectangle([(80, 80), (110, 110)], fill=palette["accent"])
+    label_font = _load_font(28, "sans-bold")
+    draw.text((130, 84), title.upper(), font=label_font, fill=palette["primary"])
+    headline_font = _load_font(72, "sans-bold")
+    lines = _wrap_text(headline, headline_font, draw, size - 200)
+    line_h = 88
+    y_start = (size - line_h * len(lines)) // 2
+    for i, line in enumerate(lines):
+        lw = _text_width(draw, line, headline_font)
+        draw.text(((size - lw) // 2, y_start + i * line_h), line,
+                  font=headline_font, fill=palette["dark"])
+    div_y = y_start + line_h * len(lines) + 40
+    draw.rectangle([(size // 2 - 60, div_y), (size // 2 + 60, div_y + 3)],
+                   fill=palette["accent"])
+    footer_font = _load_font(24, "mono-regular")
+    footer = f"{date.isoformat()}   ·   DM for website work"
+    fw = _text_width(draw, footer, footer_font)
+    draw.text(((size - fw) // 2, size - 80), footer,
+              font=footer_font, fill=palette["primary"])
+
+
+# --- Style 4: dark_neon --- black bg, neon accent headline (uppercase).
+#     Edgy / tech feel.
+def _render_dark_neon(img, draw, topic, headline, date, palette):
+    size = img.size[0]
+    title = topic.get("title", "Daily Tip")
+    bg = tuple(min(255, c // 12) for c in palette["primary"])
+    draw.rectangle([(0, 0), (size, size)], fill=bg)
+    label_font = _load_font(32, "mono-bold")
+    draw.text((80, 100), title.upper(), font=label_font, fill=palette["accent"])
+    draw.rectangle([(80, 150), (180, 153)], fill=palette["accent"])
+    headline_font = _load_font(78, "sans-bold")
+    lines = _wrap_text(headline.upper(), headline_font, draw, size - 160)
+    line_h = 92
+    y_start = (size - line_h * len(lines)) // 2 + 30
+    for i, line in enumerate(lines):
+        draw.text((80, y_start + i * line_h), line,
+                  font=headline_font, fill=palette["accent"])
+    underline_y = y_start + line_h * len(lines) + 20
+    draw.rectangle([(80, underline_y), (300, underline_y + 4)], fill=palette["accent"])
+    footer_font = _load_font(24, "mono-regular")
+    draw.text((80, size - 80), f"{date.isoformat()}  ·  DM for website work",
+              font=footer_font, fill=(180, 180, 180))
+
+
+# --- Style 5: magazine_cover --- top color bar with topic, big serif headline,
+#     bottom color block with date. Print-magazine feel.
+def _render_magazine_cover(img, draw, topic, headline, date, palette):
+    size = img.size[0]
+    title = topic.get("title", "Daily Tip")
+    draw.rectangle([(0, 0), (size, size)], fill=(250, 246, 240))
+    bar_h = 180
+    draw.rectangle([(0, 0), (size, bar_h)], fill=palette["primary"])
+    title_font = _load_font(58, "serif-bold")
+    draw.text((80, 60), title, font=title_font, fill=palette["light"])
+    issue_font = _load_font(22, "mono-regular")
+    issue_text = f"ISSUE  ·  {date.strftime('%Y-%m')}"
+    iw = _text_width(draw, issue_text, issue_font)
+    draw.text((size - iw - 80, 70), issue_text, font=issue_font, fill=palette["accent"])
+    # Decorative big quote mark
+    quote_font = _load_font(180, "serif-bold")
+    draw.text((60, bar_h - 40), "\u201C", font=quote_font, fill=palette["accent"])
+    headline_font = _load_font(68, "serif-bold")
+    lines = _wrap_text(headline, headline_font, draw, size - 160)
+    line_h = 84
+    y_start = bar_h + 80
+    for i, line in enumerate(lines):
+        draw.text((80, y_start + i * line_h), line,
+                  font=headline_font, fill=palette["dark"])
+    bottom_h = 110
+    draw.rectangle([(0, size - bottom_h), (size, size)], fill=palette["primary"])
+    footer_font = _load_font(26, "mono-bold")
+    draw.text((80, size - bottom_h + 40), f"{date.isoformat()}  ·  DM FOR WEBSITE WORK",
+              font=footer_font, fill=palette["accent"])
+    page_font = _load_font(26, "mono-bold")
+    page_text = "01"
+    pw = _text_width(draw, page_text, page_font)
+    draw.text((size - pw - 80, size - bottom_h + 40), page_text,
+              font=page_font, fill=palette["accent"])
+
+
+# --- Style 6: quote_card --- big italic serif headline as a "quote",
+#     decorative quotation marks, accent line. Linkedin-quote feel.
+def _render_quote_card(img, draw, topic, headline, date, palette):
+    size = img.size[0]
+    title = topic.get("title", "Daily Tip")
+    bg = tuple(int(c * 0.85) for c in palette["primary"])
+    draw.rectangle([(0, 0), (size, size)], fill=bg)
+    quote_font = _load_font(280, "serif-bold")
+    draw.text((50, -40), "\u201C", font=quote_font, fill=palette["accent"])
+    headline_font = _load_font(62, "serif-italic")
+    lines = _wrap_text(headline, headline_font, draw, size - 200)
+    line_h = 80
+    y_start = (size - line_h * len(lines)) // 2 + 40
+    for i, line in enumerate(lines):
+        lw = _text_width(draw, line, headline_font)
+        draw.text(((size - lw) // 2, y_start + i * line_h), line,
+                  font=headline_font, fill=palette["light"])
+    line_y = y_start + line_h * len(lines) + 30
+    draw.rectangle([(size // 2 - 80, line_y), (size // 2 + 80, line_y + 3)],
+                   fill=palette["accent"])
+    label_font = _load_font(26, "sans-bold")
+    label = title.upper()
+    lw = _text_width(draw, label, label_font)
+    draw.text(((size - lw) // 2, line_y + 30), label,
+              font=label_font, fill=palette["accent"])
+    footer_font = _load_font(22, "mono-regular")
+    footer = f"{date.isoformat()}   ·   DM for website work"
+    fw = _text_width(draw, footer, footer_font)
+    draw.text(((size - fw) // 2, size - 70), footer,
+              font=footer_font, fill=palette["light"])
+
+
+# --- Style registry + dispatcher ---
+STYLES: list[tuple[str, Any]] = [
+    ("gradient_centered",  _render_gradient_centered),
+    ("split_block",        _render_split_block),
+    ("minimalist_white",   _render_minimalist_white),
+    ("dark_neon",          _render_dark_neon),
+    ("magazine_cover",     _render_magazine_cover),
+    ("quote_card",         _render_quote_card),
+]
+
+
+def pick_style_index(date: dt.date) -> int:
+    """Rotate styles daily by hashing the date. Same date = same style."""
+    h = int(hashlib.sha256(date.isoformat().encode()).hexdigest(), 16)
+    return h % len(STYLES)
+
+
+def render_image(out_path: Path, topic: dict[str, Any], headline: str,
+                 date: dt.date, style_index: int | None = None) -> str:
+    """Render the day's image. Returns the style name used.
+
+    style_index: if provided, use that style; otherwise pick by date hash.
+    """
     if Image is None:
         raise RuntimeError(f"Pillow is required to render images: {_PILLOW_ERR}")
 
     size = 1080
     title = topic.get("title", "Daily Tip")
-    color_pair = TOPIC_COLORS.get(title, ((30, 30, 60), (60, 60, 120)))
-    top_color, bottom_color = color_pair
+    palette = _palette_for(title)
 
-    img = Image.new("RGB", (size, size), top_color)
-    pixels = img.load()
-    for y in range(size):
-        t = y / (size - 1)
-        r = int(top_color[0] + (bottom_color[0] - top_color[0]) * t)
-        g = int(top_color[1] + (bottom_color[1] - top_color[1]) * t)
-        b = int(top_color[2] + (bottom_color[2] - top_color[2]) * t)
-        for x in range(size):
-            pixels[x, y] = (r, g, b)
+    if style_index is None:
+        style_index = pick_style_index(date)
+    style_index = style_index % len(STYLES)
+    style_name, style_fn = STYLES[style_index]
 
+    img = Image.new("RGB", (size, size), (255, 255, 255))
     draw = ImageDraw.Draw(img)
-    title_font = _find_font(64)
-    title_x = 80
-    title_y = 120
-    draw.text((title_x, title_y), title, font=title_font, fill=(255, 255, 255))
-    draw.rectangle([(title_x, title_y + 90), (title_x + 200, title_y + 96)], fill=(255, 255, 255))
-
-    # Headline (wrapped, centered)
-    headline_font = _find_font(56)
-    max_text_width = size - 160
-    lines = _wrap_text(headline, headline_font, draw, max_text_width)
-    line_height = 76
-    total_height = line_height * len(lines)
-    y_start = (size - total_height) // 2 + 60
-    for i, line in enumerate(lines):
-        draw.text((title_x, y_start + i * line_height), line, font=headline_font, fill=(240, 240, 240))
-
-    footer_font = _find_font(32)
-    footer_text = f"{date.isoformat()}  -  DM for website work"
-    draw.text((title_x, size - 100), footer_text, font=footer_font, fill=(220, 220, 220))
+    style_fn(img, draw, topic, headline, date, palette)
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     img.save(out_path, "PNG", optimize=True)
+    return style_name
 
 
 # ---------------------------------------------------------------------------
@@ -467,8 +710,12 @@ def main() -> int:
                     print(f"[INFO] Image already rendered: {image_path}")
                     return 0
                 # Image missing but manifest present — re-render from manifest
+                # Use the style recorded in the manifest if present, else pick by date
+                style_idx = existing.get("style_index")
+                style_idx = int(style_idx) if style_idx is not None else None
                 render_image(image_path, {"title": existing.get("topic", "")},
-                             existing.get("image_headline", existing.get("fact", "")), date)
+                             existing.get("image_headline", existing.get("fact", "")),
+                             date, style_index=style_idx)
                 print(f"[INFO] Image re-rendered: {image_path}")
                 return 0
         except (json.JSONDecodeError, OSError):
@@ -497,8 +744,10 @@ def main() -> int:
 
     image_filename = f"{date.isoformat()}.png"
     image_path = images_dir / image_filename
-    render_image(image_path, topic, image_headline, date)
+    style_index = pick_style_index(date)
+    style_name = render_image(image_path, topic, image_headline, date, style_index=style_index)
     print(f"[INFO] Image written: {image_path} ({image_path.stat().st_size} bytes)")
+    print(f"[INFO] Style: {style_name} (index {style_index})")
 
     manifest = {
         "id": content_id(date),
@@ -512,6 +761,8 @@ def main() -> int:
         "image_filename": image_filename,
         "ai_generated": ai_generated,
         "generator": "groq" if ai_generated else "deterministic-fallback",
+        "image_style": style_name,
+        "style_index": style_index,
     }
 
     with manifest_path.open("w", encoding="utf-8") as fh:
