@@ -200,6 +200,8 @@ Rules:
 
     # Llama 4 models may not support response_format json_object. Try with it
     # first; if 400, retry without it (we'll parse JSON from content ourselves).
+    # gpt-oss models ALSO emit </think>reasoning blocks before the answer, so we need
+    # generous max_tokens to fit both the reasoning + the final JSON.
     for use_json_mode in (True, False):
         body = {
             "model": model,
@@ -207,7 +209,7 @@ Rules:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            "max_tokens": 600,
+            "max_tokens": 2000,  # gpt-oss needs room for </think> + JSON
             "temperature": 0.7,
         }
         if use_json_mode:
@@ -250,18 +252,38 @@ Rules:
         print(f"[WARN] Groq response was unparseable: {exc}. Falling back.")
         return None
 
-    # Strip markdown fences if model didn't honor json_mode
+    # gpt-oss models emit <think>...</think> reasoning blocks before the
+    # actual answer. Strip them. Also strip markdown fences if present.
+    content = content.strip()
+
+    # Remove <think>...</think> blocks (case-insensitive, multiline, non-greedy)
+    import re
+    content = re.sub(r"<think>.*?</think>", "", content, flags=re.IGNORECASE | re.DOTALL)
+    # If there's an unclosed <think> tag, drop everything from it to the end
+    # (some models emit a partial block when cut off by max_tokens)
+    content = re.sub(r"<think>.*$", "", content, flags=re.IGNORECASE | re.DOTALL)
+
+    # Strip markdown fences (```json ... ```)
     content = content.strip()
     if content.startswith("```"):
         lines = content.split("\n")
-        # Remove first line (```json) and last line (```)
         lines = [l for l in lines if not l.strip().startswith("```")]
         content = "\n".join(lines).strip()
+
+    # If the model emitted any prose before the JSON, find the first '{' and
+    # cut everything before it. Same for trailing text after the last '}'.
+    first_brace = content.find("{")
+    last_brace = content.rfind("}")
+    if first_brace >= 0 and last_brace > first_brace:
+        content = content[first_brace : last_brace + 1]
 
     try:
         parsed = json.loads(content)
     except json.JSONDecodeError as exc:
         print(f"[WARN] Groq returned non-JSON content: {exc}. Falling back.")
+        # Print a redacted snippet for debugging (helps tune the prompt)
+        snippet = content[:300] + ("...<truncated>" if len(content) > 300 else "")
+        print(f"[INFO] Raw content snippet: {snippet}")
         return None
 
     required_keys = {"image_headline", "caption", "hashtags"}
