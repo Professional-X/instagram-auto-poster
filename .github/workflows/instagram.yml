@@ -1,13 +1,20 @@
 name: Instagram Automation
 
-# Manual trigger + daily schedule.
-# Cron is in UTC. "30 12 * * *" = 12:30 UTC every day.
-# Adjust to your liking -- keep it <= once per day to avoid spam.
+# Manual trigger + 4 daily scheduled runs at peak IST engagement hours.
+# Cron is in UTC. IST = UTC + 5:30.
+#   08:00 IST = 02:30 UTC  -> slot 1 (morning)
+#   12:30 IST = 07:00 UTC  -> slot 2 (lunch)
+#   18:00 IST = 12:30 UTC  -> slot 3 (evening)
+#   20:30 IST = 15:00 UTC  -> slot 4 (night)
 on:
   workflow_dispatch:
     inputs:
       date_override:
         description: "Optional date override (YYYY-MM-DD). Defaults to today UTC."
+        required: false
+        default: ""
+      slot_override:
+        description: "Slot 1-4 (1=morning, 2=lunch, 3=evening, 4=night). Defaults to auto from current UTC hour."
         required: false
         default: ""
       dry_run:
@@ -17,15 +24,18 @@ on:
         default: false
 
   schedule:
-    - cron: "30 12 * * *"
+    - cron: "30 2 * * *"    # 08:00 IST - slot 1 (morning)
+    - cron: "0 7 * * *"     # 12:30 IST - slot 2 (lunch)
+    - cron: "30 12 * * *"   # 18:00 IST - slot 3 (evening)
+    - cron: "0 15 * * *"    # 20:30 IST - slot 4 (night)
 
-# The workflow commits the generated image and the updated history.json back
-# to the repo, so we need write access.
 permissions:
   contents: write
 
+# Allow concurrent runs across different slots, but never let the same slot
+# run twice at once (cancels the older one).
 concurrency:
-  group: instagram-automation
+  group: instagram-automation-${{ github.event.inputs.slot_override || 'auto' }}
   cancel-in-progress: false
 
 jobs:
@@ -34,23 +44,17 @@ jobs:
     timeout-minutes: 15
 
     env:
-      # Never print these. They are masked in logs automatically by GitHub Actions
-      # because they come from secrets.* -- but we still never echo them.
       COMPOSIO_API_KEY: ${{ secrets.COMPOSIO_API_KEY }}
       COMPOSIO_CONNECTED_ACCOUNT_ID: ${{ secrets.COMPOSIO_CONNECTED_ACCOUNT_ID }}
       COMPOSIO_USER_ID: ${{ secrets.COMPOSIO_USER_ID }}
       INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
-      # Groq (OpenAI-compatible API) for AI caption generation. Optional --
-      # if absent or invalid, generate_content.py falls back to deterministic content.
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # We need the full history to push back safely.
           fetch-depth: 0
-          # Use the workflow's default token (not the PAT).
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure Git
@@ -70,32 +74,55 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Determine run date
-        id: date
+      - name: Determine run date and slot
+        id: meta
         run: |
+          # Date
           if [ -n "${{ github.event.inputs.date_override }}" ]; then
             echo "date=${{ github.event.inputs.date_override }}" >> "$GITHUB_OUTPUT"
           else
             echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           fi
 
+          # Slot: from input, or auto-compute from current UTC hour
+          SLOT_INPUT="${{ github.event.inputs.slot_override }}"
+          if [ -n "$SLOT_INPUT" ]; then
+            SLOT="$SLOT_INPUT"
+          else
+            # Map UTC hour to slot based on the 4 cron schedules above
+            UTC_HOUR=$(date -u +%H)
+            UTC_MIN=$(date -u +%M)
+            # 02:30 UTC -> slot 1, 07:00 -> slot 2, 12:30 -> slot 3, 15:00 -> slot 4
+            # Use a window of +/- 1 hour around each scheduled time to be safe
+            case "$UTC_HOUR" in
+              01|02|03) SLOT=1 ;;   # around 02:30 UTC (08:00 IST morning)
+              06|07|08) SLOT=2 ;;   # around 07:00 UTC (12:30 IST lunch)
+              11|12|13) SLOT=3 ;;   # around 12:30 UTC (18:00 IST evening)
+              14|15|16) SLOT=4 ;;   # around 15:00 UTC (20:30 IST night)
+              *) SLOT=1 ;;
+            esac
+          fi
+          echo "slot=$SLOT" >> "$GITHUB_OUTPUT"
+          echo "[INFO] Date: ${{ steps.meta.outputs.date }}  Slot: $SLOT"
+
       - name: Generate content
         run: |
-          python scripts/generate_content.py --date "${{ steps.date.outputs.date }}" --out-dir content
+          python scripts/generate_content.py \
+            --date "${{ steps.meta.outputs.date }}" \
+            --slot "${{ steps.meta.outputs.slot }}" \
+            --out-dir content
 
       - name: Commit generated image to repo (for public raw URL)
-        # The image must be reachable by Instagram's servers. Since this repo
-        # is public, raw.githubusercontent.com works. We commit the image,
-        # then read back the raw URL.
         run: |
-          DATE="${{ steps.date.outputs.date }}"
-          IMAGE_PATH="content/images/${DATE}.png"
+          DATE="${{ steps.meta.outputs.date }}"
+          SLOT="${{ steps.meta.outputs.slot }}"
+          IMAGE_PATH="content/images/${DATE}-${SLOT}.png"
           if [ -f "$IMAGE_PATH" ]; then
             git add "$IMAGE_PATH"
             if git diff --cached --quiet; then
               echo "[INFO] Image unchanged; no commit needed."
             else
-              git commit -m "chore(content): generated image for ${DATE}"
+              git commit -m "chore(content): generated image for ${DATE} slot ${SLOT}"
               git push
               echo "[INFO] Image pushed. Waiting 20s for raw URL CDN propagation..."
               sleep 20
@@ -105,23 +132,22 @@ jobs:
           fi
 
       - name: Write public raw URL into manifest
-        # Build the canonical raw URL. We use the explicit commit SHA URL to
-        # bypass any CDN caching of the branch-named URL.
         id: url
         run: |
-          DATE="${{ steps.date.outputs.date }}"
+          DATE="${{ steps.meta.outputs.date }}"
+          SLOT="${{ steps.meta.outputs.slot }}"
           SHA=$(git rev-parse HEAD)
           OWNER="${{ github.repository_owner }}"
           REPO="${{ github.event.repository.name }}"
-          RAW_URL="https://raw.githubusercontent.com/${OWNER}/${REPO}/${SHA}/content/images/${DATE}.png"
+          RAW_URL="https://raw.githubusercontent.com/${OWNER}/${REPO}/${SHA}/content/images/${DATE}-${SLOT}.png"
           echo "image_url=$RAW_URL" >> "$GITHUB_OUTPUT"
           echo "[INFO] Image URL: $RAW_URL"
 
-          # Patch the manifest with the URL
           python - <<PY
-          import json, os
+          import json
           date = "${DATE}"
-          path = f"content/{date}.json"
+          slot = "${SLOT}"
+          path = f"content/{date}-{slot}.json"
           with open(path, "r", encoding="utf-8") as f:
               data = json.load(f)
           data["image_url"] = "${RAW_URL}"
@@ -133,25 +159,27 @@ jobs:
       - name: Publish via Composio
         id: publish
         run: |
-          DATE="${{ steps.date.outputs.date }}"
+          DATE="${{ steps.meta.outputs.date }}"
+          SLOT="${{ steps.meta.outputs.slot }}"
           DRY_FLAG=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
             DRY_FLAG="--dry-run"
           fi
           python scripts/publish_instagram.py \
-            --manifest "content/${DATE}.json" \
+            --manifest "content/${DATE}-${SLOT}.json" \
             --history "content/history.json" \
             $DRY_FLAG
 
       - name: Commit history & manifest
         if: always()
         run: |
-          DATE="${{ steps.date.outputs.date }}"
-          git add "content/history.json" "content/${DATE}.json" 2>/dev/null || true
+          DATE="${{ steps.meta.outputs.date }}"
+          SLOT="${{ steps.meta.outputs.slot }}"
+          git add "content/history.json" "content/${DATE}-${SLOT}.json" 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "[INFO] No history/manifest changes to commit."
           else
-            git commit -m "chore(content): record publication for ${DATE}"
+            git commit -m "chore(content): record publication for ${DATE} slot ${SLOT}"
             git push
           fi
 
@@ -160,7 +188,8 @@ jobs:
         run: |
           echo "### Instagram Automation Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Date:** ${{ steps.date.outputs.date }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Date:** ${{ steps.meta.outputs.date }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Slot:** ${{ steps.meta.outputs.slot }} (1=morning 08:00 IST, 2=lunch 12:30 IST, 3=evening 18:00 IST, 4=night 20:30 IST)" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Dry run:** ${{ github.event.inputs.dry_run || 'false' }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Image URL:** ${{ steps.url.outputs.image_url }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Status:** ${{ steps.publish.outcome }}" >> "$GITHUB_STEP_SUMMARY"
