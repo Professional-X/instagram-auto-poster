@@ -286,7 +286,15 @@ def main() -> int:
     save_replied(replied_path, replied_data)
 
     print(f"[INFO] Done. Replied: {total_replied}, Skipped (already replied): {total_skipped}, Errors: {total_errors}")
-    return 0 if total_errors == 0 else 1
+    # Exit 0 if we successfully processed at least one post (even if others errored).
+    # Only exit 1 if ALL posts errored — that signals a real problem.
+    successful_posts = len(recent_posts) - total_errors
+    if total_errors > 0 and successful_posts == 0:
+        print(f"[ERROR] All {total_errors} posts failed. Exiting 1.", file=sys.stderr)
+        return 1
+    if total_errors > 0:
+        print(f"[INFO] {total_errors} posts errored but {successful_posts} succeeded. Continuing (exit 0).")
+    return 0
 
 
 if __name__ == "__main__":
