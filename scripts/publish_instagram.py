@@ -65,6 +65,14 @@ ACTION_GET_POST_STATUS = "INSTAGRAM_GET_POST_STATUS"
 
 HTTP_TIMEOUT_SECONDS = 90
 
+# Instagram Graph API: after creating a media container, the image is downloaded
+# and processed asynchronously. You CANNOT call media_publish until status_code
+# == "FINISHED". Typical wait: 3-15 seconds for a small PNG.
+READINESS_POLL_INTERVAL_SECONDS = 3
+READINESS_MAX_WAIT_SECONDS = 90
+READY_STATUS = "FINISHED"
+ERROR_STATUSES = {"ERROR", "EXPIRED"}
+
 
 # ---------------------------------------------------------------------------
 # Errors
@@ -234,6 +242,55 @@ def verify_connected_account(config: dict[str, str]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Container readiness polling (CRITICAL — Instagram needs time to fetch image)
+# ---------------------------------------------------------------------------
+
+def wait_until_ready(creation_id: str, config: dict[str, str]) -> None:
+    """Poll INSTAGRAM_GET_POST_STATUS until status_code == 'FINISHED'.
+
+    Instagram Graph API requires this between creating a container and
+    publishing it. Without it, you get error 9007 / subcode 2207027:
+        "Media ID is not available -- The media is not ready for publishing"
+
+    Raises ComposioError on ERROR/EXPIRED status or timeout.
+    """
+    deadline = time.monotonic() + READINESS_MAX_WAIT_SECONDS
+    attempt = 0
+    last_status = None
+    while time.monotonic() < deadline:
+        attempt += 1
+        data = call_composio(
+            ACTION_GET_POST_STATUS,
+            arguments={"creation_id": str(creation_id)},
+            config=config,
+        )
+        # Composio wraps IG Graph API fields. Try multiple known key names.
+        status = (
+            data.get("status_code")
+            or data.get("status")
+            or (data.get("data") or {}).get("status_code")
+            or "UNKNOWN"
+        )
+        last_status = status
+        print(f"[INFO] Container {creation_id} status (attempt {attempt}): {status}")
+        if status == READY_STATUS:
+            print(f"[INFO] Container ready after ~{attempt * READINESS_POLL_INTERVAL_SECONDS}s")
+            return
+        if status in ERROR_STATUSES:
+            raise ComposioError(
+                f"Instagram media container {creation_id} entered {status} state. "
+                f"Full response: {_sanitize_for_log(json.dumps(data))}",
+                action=ACTION_GET_POST_STATUS,
+            )
+        time.sleep(READINESS_POLL_INTERVAL_SECONDS)
+    raise ComposioError(
+        f"Timed out after {READINESS_MAX_WAIT_SECONDS}s waiting for container "
+        f"{creation_id} to become FINISHED (last status: {last_status})",
+        action=ACTION_GET_POST_STATUS,
+    )
+
+
+# ---------------------------------------------------------------------------
 # History (idempotency)
 # ---------------------------------------------------------------------------
 
@@ -316,7 +373,13 @@ def publish(manifest: dict[str, Any], config: dict[str, str]) -> str:
         )
     print(f"[INFO] Container created: {creation_id}")
 
-    # Step 2: publish (Composio handles the readiness check internally for v3)
+    # CRITICAL: Instagram needs a few seconds to download + process the image
+    # before it can be published. Calling INSTAGRAM_CREATE_POST immediately
+    # fails with error 9007 ("media is not ready for publishing").
+    print("[INFO] Waiting for container to finish processing...")
+    wait_until_ready(str(creation_id), config)
+
+    # Step 2: publish (container is now FINISHED)
     publish_data = call_composio(
         ACTION_CREATE_POST,
         arguments={
