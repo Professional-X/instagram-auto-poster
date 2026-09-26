@@ -162,27 +162,34 @@ def generate_with_groq(topic_title: str, seed_fact: str) -> dict[str, Any] | Non
     model = os.environ.get("GROQ_MODEL") or GROQ_DEFAULT_MODEL
 
     system_prompt = (
-        "You are the social media manager for a web design agency. Your job is to "
-        "turn a short technical fact about web design / UX / conversion into an "
-        "Instagram post that educates potential clients and positions the agency "
-        "as an expert. Be concise, useful, and never spammy. Avoid engagement-bait, "
-        "exaggerated claims, or fake urgency."
+        "You are the social media manager for a freelance web designer. Your job is to "
+        "turn a short fact about websites / web design / SEO into an Instagram post that "
+        "EDUCATES POTENTIAL CLIENTS (small business owners, not other designers) and "
+        "DRIVES THEM TO DM THE ACCOUNT FOR WEBSITE WORK. Tone: friendly expert, not salesy. "
+        "Talk to business owners like a helpful advisor, not a designer showing off. "
+        "Every post should make a small business owner think 'I should DM this person "
+        "about my website.'"
     )
     user_prompt = f"""Topic: {topic_title}
 Seed fact: {seed_fact}
 
-Write an Instagram post for a web design agency's account. Return STRICT JSON
-with these keys (and no others):
+Write an Instagram post for a freelance web designer's account. The audience is
+POTENTIAL CLIENTS (small business owners), not other designers. The goal is to
+educate them AND drive DMs for new website projects.
+
+Return STRICT JSON with these keys (and no others):
 
 {{
-  "image_headline": "A short punchy headline (5-8 words) to render on the image itself. No emojis. No hashtags. Plain text only.",
-  "caption": "An Instagram caption (120-220 chars). Start with a hook line, then explain the tip in 1-2 sentences, end with a soft CTA like 'Save this for your next redesign.' or 'Follow for daily web design tips.' No emojis. Hashtags go separately.",
-  "hashtags": ["3 to 5 relevant hashtags, each starting with #, lowercased, no spaces"]
+  "image_headline": "A short punchy headline (4-8 words) to render on the image itself. Must speak to a business owner's pain or goal. No emojis. No hashtags. Plain text only. Example: 'Your website is losing customers.'",
+  "caption": "An Instagram caption (150-280 chars). Start with a hook line that grabs a business owner's attention. Then explain the tip in 1-2 plain-English sentences (no jargon). End with a soft CTA that invites a DM, e.g. 'DM me to audit your current site' or 'Need a website that converts? DM me.' No emojis. Hashtags go separately.",
+  "hashtags": ["4 to 6 relevant hashtags mixing broad (#webdesign, #smallbusiness) and niche (#freelancewebdesigner, #websiteredesign). Each starts with #, lowercase, no spaces."]
 }}
 
 Rules:
-- The image_headline must be a different phrasing from the seed fact (shorter, punchier).
+- The image_headline must be a different phrasing from the seed fact (shorter, punchier, client-facing).
 - The caption must NOT repeat the image_headline verbatim.
+- Speak to business owners, NOT to other designers. No jargon like 'CSS', 'WCAG', 'Core Web Vitals' unless explained.
+- The CTA must invite a DM. Variations: 'DM me to...', 'DM for...', 'Need a...? DM me.'
 - No emoji anywhere. No mention of 'AI' or 'generated'.
 - Pure JSON only. No markdown fences. No prose before or after."""
 
@@ -278,13 +285,19 @@ Rules:
 # ---------------------------------------------------------------------------
 
 def build_deterministic_caption(topic: dict[str, Any], fact: str) -> dict[str, Any]:
-    """Build image_headline + caption + hashtags from the seed fact directly."""
-    title = topic.get("title", "Daily Tip")
+    """Build image_headline + caption + hashtags from the seed fact directly.
+    Used when Groq is unavailable. The caption is intentionally simple and
+    ends with a DM-driving CTA so it still serves the lead-gen purpose.
+    """
+    title = topic.get("title", "Website Tip")
     # Headline: take the first 6-8 words of the fact for the image overlay
     words = fact.replace("—", " ").split()
     headline = " ".join(words[:7]) + ("..." if len(words) > 7 else "")
-    caption = f"{title}\n\n{fact}\n\nFollow for daily web design tips from our agency."
-    hashtags = topic.get("hashtags") or ["#webdesign", "#ux", "#agency"]
+    caption = (
+        f"{title}\n\n{fact}\n\n"
+        f"Need a website that actually brings you clients? DM me — let's talk about your project."
+    )
+    hashtags = topic.get("hashtags") or ["#webdesign", "#freelancewebdesigner", "#smallbusiness"]
     return {
         "image_headline": headline,
         "caption": caption,
@@ -383,7 +396,7 @@ def render_image(out_path: Path, topic: dict[str, Any], headline: str, date: dt.
         draw.text((title_x, y_start + i * line_height), line, font=headline_font, fill=(240, 240, 240))
 
     footer_font = _find_font(32)
-    footer_text = f"{date.isoformat()}  -  Web Design Agency"
+    footer_text = f"{date.isoformat()}  -  DM for website work"
     draw.text((title_x, size - 100), footer_text, font=footer_font, fill=(220, 220, 220))
 
     out_path.parent.mkdir(parents=True, exist_ok=True)

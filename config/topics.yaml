@@ -1,5 +1,11 @@
-# Web design agency niche — content topics for an agency that uses Instagram
-# to guide and educate clients about web design, UX, and conversion.
+# Freelance web designer Instagram content — client-facing, lead-gen focused.
+#
+# GOAL: Educate potential clients, position the account owner as the go-to
+# freelancer for website work, and drive DMs for new projects.
+#
+# Tone: friendly expert talking to business owners, NOT to fellow designers.
+# Each post should make a small business owner think "I should DM this person
+# about my website."
 #
 # Each topic rotates daily (7 topics = weekly cycle). Each topic has 6+ seed
 # facts; we rotate one per day. With Groq enabled, the seed fact is sent to
@@ -8,72 +14,72 @@
 # verbatim as a deterministic fallback.
 
 topics:
-  - title: "UX Principle"
+  - title: "Why You Need A Website"
     facts:
-      - "Users scan pages in an F-pattern, not read word-by-word — design for scanning, not reading."
-      - "Hick's Law: more choices = slower decisions. Limit navigation to 5-7 top-level items."
-      - "The 3-click rule is a myth, but the principle holds: don't make users hunt for the next step."
-      - "Average attention span on a homepage is 5-8 seconds. Your hero must communicate value instantly."
-      - "Forms with fewer fields convert better. Remove every field that isn't strictly required."
-      - "Error messages should explain what went wrong and how to fix it — never just say 'Invalid input'."
-    hashtags: ["#uxdesign", "#userexperience", "#webdesign"]
+      - "70% of consumers research a business online before visiting or contacting them. No website = invisible."
+      - "A website builds trust 24/7 — social media posts disappear in 24 hours, your site works while you sleep."
+      - "Your own domain = your own brand. Building only on Instagram means renting your audience from Meta."
+      - "Google sends free traffic to websites. Social media doesn't send free traffic to your Instagram bio."
+      - "A 1-page website costs less than 2 months of social media ads — and it lasts years."
+      - "Customers judge your business credibility by your website in the first 3 seconds. No site = lost sale."
+    hashtags: ["#websitedesign", "#smallbusiness", "#freelancer"]
 
-  - title: "Conversion Tip"
+  - title: "Website Mistakes Losing You Clients"
     facts:
-      - "A single, prominent CTA button outperforms multiple competing CTAs by up to 371%."
-      - "Page load time under 2 seconds lifts conversion rates by 15-20% on mobile."
-      - "Trust signals (testimonials, certifications, secure badges) near the CTA reduce bounce."
-      - "Above-the-fold content drives 80% of first impressions — make it count, don't waste it on carousels."
-      - "Whitespace around a CTA increases click-through rate by roughly 20%."
-      - "Social proof above the fold (logos, ratings) increases form submissions by 15-30%."
-    hashtags: ["#conversion", "#cro", "#webdesign"]
+      - "If your site takes more than 3 seconds to load, half your visitors leave before they see anything."
+      - "No clear call-to-action? Visitors leave. Tell them exactly what to do: Call, Book, Buy, DM."
+      - "Tiny phone numbers and unreadable text on mobile = lost mobile customers (60%+ of your traffic)."
+      - "Stock photos of strangers hugging laptops make you look fake. Real photos of your work build trust."
+      - "No contact form? Customers won't dig for your email. Make it one tap to reach you."
+      - "Auto-playing music or pop-ups on entry annoy visitors. They'll bounce before reading a word."
+    hashtags: ["#websiteredesign", "#smallbusinesstips", "#webdesign"]
 
-  - title: "Typography Tip"
+  - title: "What A Website Really Costs"
     facts:
-      - "Body text should be at least 16px on desktop and 18px on mobile for comfortable reading."
-      - "Line height of 1.5-1.6x the font size improves readability by 20% on long-form content."
-      - "Limit to 2 font families per site — one for headings, one for body. More looks amateur."
-      - "Contrast ratio of 4.5:1 between text and background is the WCAG AA minimum for body text."
-      - "Sans-serif fonts read better on screens; serif fonts read better in print. Pick accordingly."
-      - "Avoid all-caps for body text — it cuts reading speed by 10-30%."
-    hashtags: ["#typography", "#webdesign", "#designsystems"]
+      - "A simple 3-5 page business website should cost $300-$1500 from a freelancer. Run from $50 quotes."
+      - "Domain = $12/year. Hosting = $60-$120/year. The website itself is the variable cost."
+      - "Cheap template sites look cheap. Custom design from a freelancer costs more but converts better."
+      - "Beware 'free website' builders — they own your domain, your design, and your data. You don't."
+      - "Recurring costs: hosting, domain, SSL, maintenance. Ask your designer what's included vs extra."
+      - "A $500 website that brings 2 new clients a month pays for itself in week one. ROI is the real cost."
+    hashtags: ["#webdesignpricing", "#smallbusiness", "#freelancewebdesigner"]
 
-  - title: "Color & Visual Design"
+  - title: "Signs You Need A Redesign"
     facts:
-      - "Stick to a 60-30-10 color ratio: 60% primary, 30% secondary, 10% accent — it always looks balanced."
-      - "Blue builds trust (banks, tech). Red creates urgency (sales, food). Green implies growth and eco."
-      - "Use one accent color for all interactive elements — it teaches users what's clickable."
-      - "Gradients add depth but hurt accessibility if text contrast drops below 4.5:1."
-      - "Color-blind users miss red/green distinctions — always pair color with text or icon cues."
-      - "Pure black (#000) on pure white (#FFF) causes eye strain on long reads — use #1A1A1A on #FAFAFA."
-    hashtags: ["#colorttheory", "#visualdesign", "#webdesign"]
+      - "If your site isn't mobile-friendly, Google penalizes it. You're losing SEO traffic every day."
+      - "Last updated in 2019? Design trends, screen sizes, and customer expectations have moved on."
+      - "If your bounce rate is above 60%, your site is confusing visitors. Time for a redesign."
+      - "Can't update your own content without calling a developer? A modern CMS fixes that in 2025."
+      - "Your competitors' websites look better than yours? Customers notice. They pick them, not you."
+      - "No analytics? You're flying blind. A redesign includes tracking so you see what's working."
+    hashtags: ["#websiteredesign", "#webdesign", "#smallbusinessgrowth"]
 
-  - title: "Page Speed"
+  - title: "WordPress vs Wix vs Custom"
     facts:
-      - "A 1-second delay in page load reduces conversions by 7% and customer satisfaction by 16%."
-      - "Images are 60% of average page weight. Compress them with WebP or AVIF to cut 30-50%."
-      - "Lazy-loading below-the-fold images cuts initial load time by 30-50% on long pages."
-      - "Render-blocking CSS delays first paint. Inline critical CSS, defer the rest."
-      - "Cumulative Layout Shift (CLS) below 0.1 means users won't see content jump as it loads."
-      - "A Content Delivery Network (CDN) reduces TTFB by 40-60% for global visitors."
-    hashtags: ["#pagespeed", "#webperformance", "#webdev"]
+      - "WordPress runs 43% of the web. Flexible, scalable, but needs maintenance. Best for growing businesses."
+      - "Wix and Squarespace are easy to start but lock you in. Migrating away costs more than building fresh."
+      - "Custom code is for apps and SaaS, not small business websites. Overkill and expensive to maintain."
+      - "Shopify is the right answer for e-commerce. Don't build a store on WordPress if you can avoid it."
+      - "Webflow is the middle ground: visual design freedom without the WordPress plugin hell."
+      - "Ask your freelancer: 'Why this platform for my business?' A good one has a clear answer."
+    hashtags: ["#wordpress", "#wix", "#webdesign"]
 
-  - title: "Mobile-First"
+  - title: "How Long A Website Takes"
     facts:
-      - "60%+ of web traffic is mobile. If your site isn't mobile-first, you're losing the majority."
-      - "Touch targets should be at least 44x44px — Apple's HIG and Google's M3 both require this."
-      - "Sticky headers on mobile should be under 60px tall — they eat viewport otherwise."
-      - "Forms with autofill attributes (autocomplete='email') cut mobile form time by 30%."
-      - "Avoid hover-only interactions on mobile — there's no hover on a touchscreen."
-      - "Test on real devices, not just Chrome DevTools. Real latency reveals real problems."
-    hashtags: ["#mobilefirst", "#responsivedesign", "#webdesign"]
+      - "A simple 3-5 page freelance-built website takes 2-3 weeks if you respond to feedback quickly."
+      - "The #1 delay isn't the designer — it's waiting on client content (photos, text, brand assets)."
+      - "Revisions are normal. 2-3 rounds are usually included. Endless revisions mean scope creep."
+      - "Rush jobs cost 50-100% more. Plan ahead — a website is an investment, not an emergency purchase."
+      - "A freelancer building 3 sites at once can give yours real attention. An agency juggling 30 cannot."
+      - "After launch: 1-2 weeks of tweaks is normal. Don't pay full price up front — milestone payments protect both sides."
+    hashtags: ["#webdesignprocess", "#freelancewebdesigner", "#smallbusiness"]
 
-  - title: "SEO Foundation"
+  - title: "Local SEO For Small Business"
     facts:
-      - "Title tags under 60 chars and meta descriptions under 155 chars avoid truncation in SERPs."
-      - "One H1 per page. Use H2-H6 to create a logical outline — Google uses this to understand structure."
-      - "Descriptive alt text on every image helps SEO and accessibility simultaneously."
-      - "Page speed is a confirmed Google ranking factor since 2018 — Core Web Vitals matter."
-      - "Internal linking distributes page authority. Link new posts to 2-3 relevant older pages."
-      - "Schema markup (JSON-LD) gets you rich snippets — they boost CTR by 20-30% on average."
-    hashtags: ["#seo", "#webdev", "#marketing"]
+      - "Claim your Google Business Profile — it's free and gets you in the local map pack. Most owners don't."
+      - "Use your city name in your homepage title and H1. 'Plumber in Austin' beats 'Welcome to my site'."
+      - "Get 5-10 Google reviews from happy customers. They matter more than any SEO trick."
+      - "List your business on Bing Places, Apple Maps, Yelp. Same effort, more visibility."
+      - "Local backlinks (Chamber of Commerce, local blogs) are worth 10x generic backlinks."
+      - "NAP consistency matters: your Name, Address, Phone must match exactly everywhere online."
+    hashtags: ["#localseo", "#smallbusinessmarketing", "#seo"]
