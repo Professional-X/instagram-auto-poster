@@ -1,0 +1,18 @@
+{
+  "id": "2026-09-27",
+  "date": "2026-09-27",
+  "topic": "Page Speed",
+  "seed_fact": "Images are 60% of average page weight. Compress them with WebP or AVIF to cut 30-50%.",
+  "image_headline": "Images are 60% of average page weight....",
+  "caption": "Page Speed\n\nImages are 60% of average page weight. Compress them with WebP or AVIF to cut 30-50%.\n\nFollow for daily web design tips from our agency.\n\n#pagespeed #webperformance #webdev",
+  "hashtags": [
+    "#pagespeed",
+    "#webperformance",
+    "#webdev"
+  ],
+  "image_file": "content/images/2026-09-27.png",
+  "image_filename": "2026-09-27.png",
+  "ai_generated": false,
+  "generator": "deterministic-fallback",
+  "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/02fc036ad5cf29656cd064cb7362af0551809112/content/images/2026-09-27.png"
+}
