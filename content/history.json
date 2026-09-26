@@ -29,16 +29,6 @@
       "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/e0713a03348e3c7e5adf38cd6321906b4d763567/content/images/2026-09-27.png",
       "detail": "Published via Composio",
       "recorded_at": "2026-09-26T06:50:16Z"
-    },
-    {
-      "id": "2026-09-28",
-      "date": "2026-09-28",
-      "topic": "Mobile-First",
-      "status": "dry_run",
-      "media_id": null,
-      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/aa1044d5c7b9d919eb9c3ef63b6ff17d9c98c469/content/images/2026-09-28.png",
-      "detail": "Dry-run validation only",
-      "recorded_at": "2026-09-26T06:53:13Z"
     }
   ]
 }
