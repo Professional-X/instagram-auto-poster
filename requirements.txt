@@ -1,0 +1,6 @@
+# Python deps for the Instagram auto-poster.
+# Keep this list small -- no frameworks.
+
+requests>=2.31,<3
+Pillow>=10.2,<12
+PyYAML>=6.0,<7

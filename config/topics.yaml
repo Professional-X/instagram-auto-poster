@@ -1,0 +1,80 @@
+# Optional topic catalogue. The script also has built-in defaults if this file
+# is missing or unparseable. Each topic rotates daily.
+#
+# Each topic needs:
+#   title:   short label rendered on the image
+#   facts:   list of one-liner facts (rotated by date so each day gets one)
+#   hashtags (optional): 3-5 relevant hashtags; if omitted, sensible defaults are used.
+#
+# Keep facts short, accurate, and useful. No spam, no fake news, no engagement bait.
+
+topics:
+  - title: "Useful Tech Fact"
+    facts:
+      - "The first webcam was invented at Cambridge University in 1991 to monitor a coffee pot."
+      - "HTTP/3 runs over QUIC, which is built on UDP instead of TCP."
+      - "The average modern smartphone has more computing power than the computers used for the Apollo 11 moon landing."
+      - "SSDs can read data at over 7,000 MB/s, roughly 30x faster than a spinning hard drive."
+      - "USB-C cables can carry up to 240W of power with Power Delivery 3.1."
+      - "The '404' error code is named after room 404 at CERN, where the original web team worked."
+    hashtags: ["#technology", "#tech", "#techfacts"]
+
+  - title: "Android Tip"
+    facts:
+      - "Long-pressing a notification on Android lets you silence or customize it per-app."
+      - "Gboard's clipboard manager keeps text you copy for up to 1 hour -- enable it from the toolbar."
+      - "Android 14's Flash Notifications setting can blink your camera flash for incoming calls."
+      - "You can run two copies of the same app with Android's 'Dual Messenger' / 'App Cloner' features."
+      - "Developer Options > 'Smallest width' lets you fit more content on screen by tweaking DPI."
+      - "Android's 'Nearby Share' works offline using Bluetooth + Wi-Fi Direct, no internet required."
+    hashtags: ["#android", "#androidtips", "#techhacks"]
+
+  - title: "AI Tool Highlight"
+    facts:
+      - "Whisper by OpenAI can transcribe 1 hour of audio in under 2 minutes on a modern GPU."
+      - "Stable Diffusion can run entirely offline on a 6GB VRAM GPU once the model is downloaded."
+      - "LocalAI lets you serve OpenAI-compatible APIs from your own hardware, with no data leaving your machine."
+      - "Ollama can run Llama 3.1 8B locally with as little as 8GB of RAM using 4-bit quantization."
+      - "sentence-transformers can index 1M documents for semantic search in under 1GB of RAM."
+      - "Hugging Face Hub hosts over 1 million open models -- you can clone any of them with git-lfs."
+    hashtags: ["#ai", "#aitools", "#machinelearning"]
+
+  - title: "Programming Fact"
+    facts:
+      - "Python's `else` clause runs after a `for` loop finishes without hitting `break`."
+      - "In JavaScript, `typeof null === 'object'` is a long-standing bug that can't be fixed without breaking the web."
+      - "Rust's borrow checker prevents data races at compile time, with zero runtime cost."
+      - "Git was created by Linus Torvalds in 2005; he named it after himself ('git' is British slang for an unpleasant person)."
+      - "The `null` reference was called 'my billion-dollar mistake' by its inventor, Tony Hoare."
+      - "UTF-8 was designed by Ken Thompson and Rob Pike in a single evening on a placemat over dinner."
+    hashtags: ["#programming", "#coding", "#developer"]
+
+  - title: "Cybersecurity Tip"
+    facts:
+      - "A password manager eliminates reuse -- pick one long master password and let it generate the rest."
+      - "Enable hardware-based 2FA (a security key) for email and password manager accounts; SMS codes can be SIM-swapped."
+      - "Check `haveibeenpwned.com` to see if your email appears in known data breaches."
+      - "Update your router firmware at least twice a year -- many home routers never receive auto-updates."
+      - "DNS-over-HTTPS (DoH) prevents your ISP from seeing which domains you look up."
+      - "Disable macro execution by default in office apps; most document-based malware needs macros enabled."
+    hashtags: ["#cybersecurity", "#infosec", "#securitytips"]
+
+  - title: "Useful Website"
+    facts:
+      - "archive.org has snapshots of the web going back to 1996 -- type any URL to see its history."
+      - "wikipedia.org's 'Random Article' button is the rabbit hole of all rabbit holes."
+      - "oa.mg lets you search 250M+ open-access research papers for free."
+      - "news.ycombinator.com surfaces tech discussions before they reach mainstream media."
+      - "remove.bg strips image backgrounds in one click, no signup needed for low-res output."
+      - "excalidraw.com is a free hand-drawn-style whiteboard that runs in the browser."
+    hashtags: ["#websites", "#tools", "#productivity"]
+
+  - title: "Developer Trick"
+    facts:
+      - "In VS Code, Ctrl+Shift+P opens the Command Palette -- almost every action is reachable from there."
+      - "Git's `reflog` records every HEAD move; even a bad `reset --hard` is usually recoverable."
+      - "`jq` can transform JSON in pipes: `curl -s url | jq '.data[] | .name'`."
+      - "Python's `if __name__ == '__main__':` lets a file be both importable and runnable."
+      - "SSH config file (~/.ssh/config) lets you alias hosts so `ssh prod` just works."
+      - "Docker's `--restart unless-stopped` policy auto-restarts containers after reboots but not after manual stops."
+    hashtags: ["#devtips", "#programming", "#tools"]

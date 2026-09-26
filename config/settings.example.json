@@ -1,0 +1,19 @@
+{
+  "_comment": "Copy this file to config/settings.json (or set env vars in GitHub Actions secrets). DO NOT commit real credentials.",
+  "composio": {
+    "api_key": "PUT_IN_GITHUB_SECRET_COMPOSIO_API_KEY",
+    "connected_account_id": "PUT_IN_GITHUB_SECRET_COMPOSIO_CONNECTED_ACCOUNT_ID",
+    "user_id": "PUT_IN_GITHUB_SECRET_COMPOSIO_USER_ID (often 'default')"
+  },
+  "instagram": {
+    "ig_user_id": "PUT_IN_GITHUB_SECRET_INSTAGRAM_USER_ID (your Instagram Business account numeric ID)"
+  },
+  "ai": {
+    "provider": "none (v1 uses built-in deterministic content). Reserved for future: openai | anthropic | local",
+    "api_key": "PUT_IN_GITHUB_SECRET_AI_API_KEY (optional)"
+  },
+  "schedule": {
+    "cron": "30 12 * * *",
+    "timezone_note": "Cron is UTC. 12:30 UTC = 18:00 IST. Adjust as needed."
+  }
+}
