@@ -1,17 +1,11 @@
 # Freelance web designer Instagram content — client-facing, lead-gen focused.
+# 7 topics x 25 facts each = 175 unique facts. At 4 posts/day = ~44 days of
+# unique (topic, fact) combinations before any repeat. Combined with Groq
+# generating fresh captions each time, the feed NEVER shows identical posts.
 #
-# GOAL: Educate potential clients, position the account owner as the go-to
-# freelancer for website work, and drive DMs for new projects.
-#
-# Tone: friendly expert talking to business owners, NOT to fellow designers.
-# Each post should make a small business owner think "I should DM this person
-# about my website."
-#
-# Each topic rotates daily (7 topics = weekly cycle). Each topic has 6+ seed
-# facts; we rotate one per day. With Groq enabled, the seed fact is sent to
-# the LLM which rewrites it into a polished Instagram caption + image headline
-# + 3-5 hashtags. With Groq disabled (or on error), the seed fact is used
-# verbatim as a deterministic fallback.
+# When the static pool is exhausted (after ~44 days), generate_content.py
+# falls back to asking Groq for a fresh tip about the topic, passing the last
+# 50 used tips as "avoid these" context. This gives infinite variety.
 
 topics:
   - title: "Why You Need A Website"
@@ -22,7 +16,26 @@ topics:
       - "Google sends free traffic to websites. Social media doesn't send free traffic to your Instagram bio."
       - "A 1-page website costs less than 2 months of social media ads — and it lasts years."
       - "Customers judge your business credibility by your website in the first 3 seconds. No site = lost sale."
-    hashtags: ["#websitedesign", "#smallbusiness", "#freelancer"]
+      - "An email list owned by you beats a follower count owned by Meta. Your website is the capture tool."
+      - "Websites work without algorithms deciding who sees your content. Your homepage always reaches 100%."
+      - "A website lets you show your full portfolio. Instagram captions cap you at 2,200 characters."
+      - "Online booking through your website works at 3am. Your phone doesn't."
+      - "Customers who find you via Google search convert 3x higher than social media followers."
+      - "A website is a one-time investment that compounds. Social media ads stop the second you stop paying."
+      - "Your competitors all have websites. Not having one signals you're not a serious business."
+      - "A website lets you collect customer emails for free marketing. Social platforms charge you to reach followers."
+      - "Press features and directories link to websites, not Instagram profiles. No site = missing backlinks."
+      - "Customers trust businesses with .com domains 4x more than businesses with only social profiles."
+      - "Your website can answer FAQs 24/7, freeing up your time for paying work."
+      - "A simple contact form on a website captures leads you'd lose on social media."
+      - "Local SEO puts your business in Google Maps results. No website = not in the map pack."
+      - "A website lets you sell products while you sleep. Instagram shopping requires manual setup and approval."
+      - "Reviews on your own website build trust forever. Instagram reviews disappear in your story archive."
+      - "A website is the only marketing asset you actually own. Everything else is rented."
+      - "Customers expect every real business to have a website. Not having one looks unprofessional."
+      - "Your website can rank for hundreds of search terms. Instagram posts rank for none."
+      - "A website with a blog attracts organic traffic for years. Social posts have a 24-hour half-life."
+    hashtags: ["#websitedesign", "#smallbusiness", "#freelancer", "#websitematters", "#onlinepresence", "#businesswebsite", "#getawebsite", "#webdesigner"]
 
   - title: "Website Mistakes Losing You Clients"
     facts:
@@ -32,7 +45,26 @@ topics:
       - "Stock photos of strangers hugging laptops make you look fake. Real photos of your work build trust."
       - "No contact form? Customers won't dig for your email. Make it one tap to reach you."
       - "Auto-playing music or pop-ups on entry annoy visitors. They'll bounce before reading a word."
-    hashtags: ["#websiteredesign", "#smallbusinesstips", "#webdesign"]
+      - "Confusing navigation menus with 15+ items overwhelm visitors. Stick to 5-7 top-level links."
+      - "No phone number visible? 60% of mobile users won't convert without one."
+      - "Tiny fonts (under 16px) strain eyes. Older customers especially will leave."
+      - "No SSL certificate (https)? Browsers flag your site as 'Not Secure' and visitors bail."
+      - "Broken links and 404 pages make your business look abandoned. Audit your site monthly."
+      - "Pop-ups that cover the screen on mobile = instant bounce. Delay them or remove them."
+      - "No testimonials or reviews? Customers don't trust claims without proof."
+      - "Generic 'Welcome to our website' headlines waste the most valuable real estate on your site."
+      - "Hidden contact info (3 clicks deep) loses 40% of potential leads. Put it in the header."
+      - "No mobile optimization? Google drops you from mobile search results entirely."
+      - "Using a free website builder subdomain (yoursite.wixsite.com) looks unprofessional. Get a real domain."
+      - "No favicon? Your site looks unfinished in browser tabs. Small detail, big credibility hit."
+      - "Wall-of-text paragraphs (10+ lines) scare readers away. Break them into 2-3 line chunks."
+      - "No alt text on images? You're failing accessibility AND losing image-search traffic."
+      - "Outdated copyright year (still says 2022) signals an abandoned site. Update it automatically."
+      - "Confusing pricing pages with hidden fees destroy trust. Be transparent or remove pricing entirely."
+      - "No search bar on content-heavy sites frustrates users. Add one if you have 20+ pages."
+      - "External links opening in the same tab send visitors away forever. Use target='_blank'."
+      - "No analytics installed? You're flying blind. Install Google Analytics day one."
+    hashtags: ["#websiteredesign", "#smallbusinesstips", "#webdesign", "#websitemistakes", "#conversiontips", "#uxfail", "#fixyourwebsite", "#webdesigner"]
 
   - title: "What A Website Really Costs"
     facts:
@@ -42,7 +74,26 @@ topics:
       - "Beware 'free website' builders — they own your domain, your design, and your data. You don't."
       - "Recurring costs: hosting, domain, SSL, maintenance. Ask your designer what's included vs extra."
       - "A $500 website that brings 2 new clients a month pays for itself in week one. ROI is the real cost."
-    hashtags: ["#webdesignpricing", "#smallbusiness", "#freelancewebdesigner"]
+      - "E-commerce sites cost $2000-$10000+ depending on product count and payment integration complexity."
+      - "Custom functionality (booking systems, member portals, calculators) adds $500-$5000 per feature."
+      - "WordPress sites need $200-$500/year in plugin subscriptions. Budget for it."
+      - "Logo design separate from website design usually costs $100-$500. Bundled deals save money."
+      - "SEO setup should be included, not a $1000 upsell. Find a designer who builds SEO in from day one."
+      - "Copywriting is rarely included. Either write your own text or budget $300-$1500 for a pro."
+      - "Stock photos are 'free' but make you look generic. Budget $200 for real product photography."
+      - "Maintenance plans ($30-$100/month) keep your site secure and updated. Worth it for active businesses."
+      - "Don't pay 100% upfront. Milestone payments (50/50) protect both you and the designer."
+      - "Cheap quotes ($200 for a 'full website') usually mean: stolen templates, no SEO, no support, no revisions."
+      - "A real freelancer will explain their pricing. A scammer will dodge the question."
+      - "Hourly rates ($50-$150/hr) make sense for small fixes. Project rates ($500-$5000) for full builds."
+      - "Hidden costs to ask about: stock photo licenses, font licenses, plugin renewals, hosting migrations."
+      - "A $2000 website with proper SEO brings 10x the leads of a $500 template site. Do the math."
+      - "Beware designers who quote 'a few hundred' then charge $1000+ for 'extras' like contact forms."
+      - "Wix/Shopify monthly fees ($20-$200/mo) add up. A self-hosted site is cheaper after year 2."
+      - "A blog add-on should cost $200-$500, not $2000. Don't get upsold."
+      - "Hosting that 'includes' a free website usually means a generic template. Real design costs real money."
+      - "Get everything in writing: scope, deliverables, timeline, payment schedule, revision count."
+    hashtags: ["#webdesignpricing", "#smallbusiness", "#freelancewebdesigner", "#websitescost", "#webdesignbudget", "#transparentpricing", "#webdesignquote", "#howmuchisawebsite"]
 
   - title: "Signs You Need A Redesign"
     facts:
@@ -52,7 +103,26 @@ topics:
       - "Can't update your own content without calling a developer? A modern CMS fixes that in 2025."
       - "Your competitors' websites look better than yours? Customers notice. They pick them, not you."
       - "No analytics? You're flying blind. A redesign includes tracking so you see what's working."
-    hashtags: ["#websiteredesign", "#webdesign", "#smallbusinessgrowth"]
+      - "If your site still uses stock photos from 2015, you look dated. Real photos refresh your brand."
+      - "Forms that don't work on mobile = lost leads. Test every form on a phone."
+      - "If your homepage takes 8+ seconds to load, you're losing 50% of visitors before they see anything."
+      - "Fonts smaller than 16px on body text are unreadable on mobile. Update your typography."
+      - "If your site has pop-ups, autoplay videos, or interstitials, you're annoying visitors into leaving."
+      - "No clear value proposition above the fold? Visitors bounce in 5 seconds."
+      - "If your navigation has more than 7 top-level items, it's overwhelming users. Simplify."
+      - "Site hasn't been backed up in 6 months? One hack and you lose everything. Redesign + maintenance."
+      - "If your 'Contact Us' page only has an email address, you're losing 30% of leads. Add a form."
+      - "Still using Flash or outdated plugins? Modern browsers block them. Your site looks broken."
+      - "If your site isn't accessible (alt text, keyboard nav, contrast), you're excluding 15% of customers."
+      - "Customers asking 'do you have a website?' means yours isn't memorable. Redesign for impact."
+      - "If your site looks identical to 5 competitors, you're not standing out. Differentiate."
+      - "Site was built on a defunct platform (Wix Editor X, old Weebly)? Migrate before it shuts down."
+      - "If your site has dead links, broken images, or 404 errors, it signals an abandoned business."
+      - "Your site doesn't have an 'About' page with a real photo of you? Customers want to trust a person."
+      - "No schema markup? You're missing rich snippets that boost click-through rates 30%."
+      - "If your site's copyright year is 2+ years old, visitors assume you're out of business."
+      - "Redesign ROI: a $2000 redesign that lifts conversion 2x pays for itself in a month."
+    hashtags: ["#websiteredesign", "#webdesign", "#smallbusinessgrowth", "#redesign", "#websiteupgrade", "#timeforanewwebsite", "#webdesigner", "#fixmywebsite"]
 
   - title: "WordPress vs Wix vs Custom"
     facts:
@@ -62,7 +132,26 @@ topics:
       - "Shopify is the right answer for e-commerce. Don't build a store on WordPress if you can avoid it."
       - "Webflow is the middle ground: visual design freedom without the WordPress plugin hell."
       - "Ask your freelancer: 'Why this platform for my business?' A good one has a clear answer."
-    hashtags: ["#wordpress", "#wix", "#webdesign"]
+      - "WordPress plugins are both its superpower and Achilles heel. More plugins = more conflicts."
+      - "Wix's 'free' plan shows ads on your site and locks your domain. Upgrade or leave."
+      - "Squarespace templates look gorgeous but customizing beyond them requires developer help ($$)."
+      - "Shopify's transaction fees (2%) add up. Use Shopify Payments to avoid them."
+      - "WordPress needs updates monthly. Skip them and you get hacked. Budget for maintenance."
+      - "Webflow has a learning curve but lets you build custom layouts without code. Worth it for designers."
+      - "Custom-coded sites are fastest but every update requires a developer. Not for non-technical owners."
+      - "Wix ADI (AI-built sites) look generic. You're getting a template, not a custom design."
+      - "WordPress + Elementor gives you drag-and-drop editing without lock-in. Best of both worlds."
+      - "Squarespace e-commerce works for under 50 products. Beyond that, switch to Shopify."
+      - "Don't let a designer pick a platform because it's easier for THEM. Pick what's right for YOU."
+      - "WordPress multisite is overkill for 99% of businesses. Use a single install."
+      - "Wix Studio (newer) is better than classic Wix but still lock-in. Webflow is more flexible."
+      - "If you outgrow Squarespace, migrating to WordPress costs $1000-$3000. Plan ahead."
+      - "Custom static sites (HTML/CSS) are blazing fast but require code for any content update."
+      - "Framer is the new kid on the block — like Webflow but with motion built in. Great for portfolios."
+      - "WordPress with managed hosting (WP Engine, Kinsta) eliminates 90% of maintenance headaches."
+      - "Don't switch platforms mid-business-launch. Migrate during a slow month to minimize disruption."
+      - "Ask: 'Can I edit my own content after launch?' If no, walk away."
+    hashtags: ["#wordpress", "#wix", "#webdesign", "#squarespace", "#shopify", "#webflow", "#platformchoice", "#webdesigner"]
 
   - title: "How Long A Website Takes"
     facts:
@@ -72,7 +161,26 @@ topics:
       - "Rush jobs cost 50-100% more. Plan ahead — a website is an investment, not an emergency purchase."
       - "A freelancer building 3 sites at once can give yours real attention. An agency juggling 30 cannot."
       - "After launch: 1-2 weeks of tweaks is normal. Don't pay full price up front — milestone payments protect both sides."
-    hashtags: ["#webdesignprocess", "#freelancewebdesigner", "#smallbusiness"]
+      - "E-commerce sites with 50+ products take 4-8 weeks. Each product needs photos, description, pricing."
+      - "Custom functionality (bookings, portals) adds 2-4 weeks depending on complexity."
+      - "Content writing adds 1-2 weeks. If you write your own text, factor in 5-10 hours of your time."
+      - "Logo design alongside the website adds 1 week. Done separately, add 2 weeks."
+      - "A real freelancer gives you a timeline BEFORE you pay. Vague timelines = vague work."
+      - "Wireframes take 3-5 days. Design mockups 5-7 days. Development 7-14 days. Revisions 3-5 days."
+      - "If your designer says '2 days', they're using a template. Real custom design takes longer."
+      - "SEO setup adds 2-3 days to the timeline. Worth it — don't skip it to save a day."
+      - "Testing on real devices (not just Chrome) takes 2-3 days. Skip it and bugs ship to production."
+      - "Domain transfer + DNS propagation adds 24-48 hours to launch. Plan for it."
+      - "Training you to update your own content takes 1-2 hours. Insist on it being included."
+      - "If your designer ghosts you mid-project, you own what's been delivered. Get a kill-fee clause."
+      - "Two-week 'sprints' with weekly check-ins beat 8-week silent stretches. Insist on communication."
+      - "Holidays, sick days, and scope creep all extend timelines. Add 20% buffer to any quote."
+      - "Mobile optimization adds 3-5 days. Don't accept a 'desktop only' site in 2025."
+      - "Accessibility audits add 2-4 days. Worth it — 15% of your customers depend on it."
+      - "Multi-language sites take 2-3x longer. Each language needs translation + layout adjustments."
+      - "A blog with 5 starter posts adds 1 week. Don't launch a blog with zero content."
+      - "Post-launch support (30 days minimum) should be in the contract. Bugs always appear."
+    hashtags: ["#webdesignprocess", "#freelancewebdesigner", "#smallbusiness", "#websitetimeline", "#webdesignproject", "#webdesigner", "#howlong", "#webdesignprocess"]
 
   - title: "Local SEO For Small Business"
     facts:
@@ -82,4 +190,23 @@ topics:
       - "List your business on Bing Places, Apple Maps, Yelp. Same effort, more visibility."
       - "Local backlinks (Chamber of Commerce, local blogs) are worth 10x generic backlinks."
       - "NAP consistency matters: your Name, Address, Phone must match exactly everywhere online."
-    hashtags: ["#localseo", "#smallbusinessmarketing", "#seo"]
+      - "Add a map embed on your contact page. Google sees it as a local signal."
+      - "Create one page per service location. 'Plumber in Austin' + 'Plumber in Round Rock' = 2 ranking pages."
+      - "Get listed in local directories (Yellow Pages, BBB, local chamber). 30 minutes, lifetime value."
+      - "Respond to every Google review within 24 hours. Google rewards active business owners."
+      - "Post weekly updates on your Google Business Profile. It signals an active business to Google."
+      - "Add photos to your Google Business Profile monthly. Businesses with 50+ photos get 2x more calls."
+      - "Use schema markup for LocalBusiness on your homepage. It tells Google you're local."
+      - "Get listed on Nextdoor for local service businesses (plumbers, electricians, tutors). Free leads."
+      - "Local citations (consistent NAP on 30+ directories) boost map pack rankings. Use BrightLocal."
+      - "Embed a Google Map on your contact page. Reinforces your location to Google."
+      - "Ask customers for reviews in person right after service. Conversion rate is 5x higher than email asks."
+      - "Local landing pages with city + service in URL (e.g. /austin-plumber) rank for both terms."
+      - "Track your map pack ranking with free tools (Local Falcon, BrightLocal). Know where you stand."
+      - "Q&A on your Google Business Profile: pre-answer common questions. Don't wait for customers to ask."
+      - "Local schema markup on every page: includes address, hours, phone. Use schema.org/LocalBusiness."
+      - "Mention nearby landmarks on your contact page. Helps Google's local relevance signals."
+      - "Get reviews that mention your city + service. 'Best plumber in Austin' is gold."
+      - "Optimize for 'near me' searches. Make sure your services + location are prominent on every page."
+      - "Local SEO shows results in 2-3 months, not 2-3 years. Faster than national SEO."
+    hashtags: ["#localseo", "#smallbusinessmarketing", "#seo", "#googlebusinessprofile", "#localmarketing", "#smallbusinessseo", "#mapack", "#localsearch"]

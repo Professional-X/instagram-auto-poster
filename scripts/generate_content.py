@@ -84,9 +84,55 @@ def load_topics() -> list[dict[str, Any]]:
     return data["topics"]
 
 
-def pick_topic_and_fact(date: dt.date, slot: int) -> tuple[dict[str, Any], str, int]:
+def _load_used_combos(out_dir: Path) -> set[tuple[str, int]]:
+    """Read history.json and return the set of (topic_title, fact_index) combos
+    that have already been published. Used to skip repeats.
+    """
+    history_path = out_dir / "history.json"
+    if not history_path.exists():
+        return set()
+    try:
+        with history_path.open("r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (json.JSONDecodeError, OSError):
+        return set()
+    used = set()
+    for entry in data.get("publications", []):
+        topic = entry.get("topic")
+        fact_index = entry.get("fact_index")
+        if topic is not None and fact_index is not None:
+            used.add((topic, int(fact_index)))
+    return used
+
+
+def _load_used_tips(out_dir: Path, topic_title: str, limit: int = 50) -> list[str]:
+    """Read history.json and return the most recent N seed_facts for the given
+    topic. Used as 'avoid these' context when asking Groq for a fresh tip.
+    """
+    history_path = out_dir / "history.json"
+    if not history_path.exists():
+        return []
+    try:
+        with history_path.open("r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (json.JSONDecodeError, OSError):
+        return []
+    tips = []
+    for entry in reversed(data.get("publications", [])):
+        if entry.get("topic") == topic_title and entry.get("seed_fact"):
+            tips.append(entry["seed_fact"])
+            if len(tips) >= limit:
+                break
+    return tips
+
+
+def pick_topic_and_fact(date: dt.date, slot: int, out_dir: Path | None = None) -> tuple[dict[str, Any], str, int]:
     """Rotate topics by (day_of_year * 4 + slot) so each slot on the same day
     gets a different topic. Within a topic, pick a fact by (date_hash + slot).
+
+    If out_dir is provided, skip (topic, fact_index) combos that already appear
+    in history.json. When all facts for a topic are exhausted, fall back to
+    asking Groq for a fresh tip (handled by caller).
     """
     topics = load_topics()
     if not topics:
@@ -98,8 +144,21 @@ def pick_topic_and_fact(date: dt.date, slot: int) -> tuple[dict[str, Any], str, 
     facts = topic.get("facts") or []
     if not facts:
         raise RuntimeError(f"Topic '{topic.get('title')}' has no facts")
-    fact_index = (date_hash + slot) % len(facts)
-    return topic, facts[fact_index], fact_index
+
+    # Load used combos from history (if out_dir provided) so we don't repeat
+    used_combos = _load_used_combos(out_dir) if out_dir else set()
+
+    # Start with the date-hash-based fact index, then scan forward to find an unused one
+    start_index = (date_hash + slot) % len(facts)
+    fact_index = start_index
+    for _ in range(len(facts)):
+        if (topic["title"], fact_index) not in used_combos:
+            return topic, facts[fact_index], fact_index
+        fact_index = (fact_index + 1) % len(facts)
+
+    # All facts for this topic have been used. Return the start_index anyway;
+    # caller can detect this and ask Groq for a fresh tip.
+    return topic, facts[start_index], start_index
 
 
 # ---------------------------------------------------------------------------
@@ -277,6 +336,116 @@ def build_deterministic_caption(topic: dict[str, Any], fact: str) -> dict[str, A
         "caption": caption,
         "hashtags": list(hashtags)[:5],
     }
+
+
+def generate_fresh_tip_with_groq(topic_title: str, used_tips: list[str]) -> str | None:
+    """When all static facts for a topic are exhausted, ask Groq to generate
+    a FRESH tip we haven't used before. Used as a 'never repeat' fallback.
+
+    Returns the new tip string on success, or None on any failure.
+    """
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key or not api_key.strip():
+        return None
+    model = os.environ.get("GROQ_MODEL") or GROQ_DEFAULT_MODEL
+
+    used_block = ""
+    if used_tips:
+        used_block = "\n\nALREADY-USED TIPS (do NOT repeat these or any close paraphrase):\n"
+        used_block += "\n".join(f"- {t}" for t in used_tips[:30])
+        used_block += "\n"
+
+    system_prompt = (
+        "You generate fresh, specific, factually-accurate one-liner tips for a "
+        "freelance web designer's Instagram. Each tip must be a single sentence "
+        "under 200 characters, plain English, no jargon, aimed at small business "
+        "owners (not other designers). Be concrete, not generic. Include a "
+        "specific number, percentage, or time-frame where possible."
+    )
+    user_prompt = f"""Topic: {topic_title}
+
+Generate ONE fresh, specific, useful tip about this topic for a small business
+owner who might hire a freelance web designer.{used_block}
+
+Return STRICT JSON: {{"tip": "<your single-sentence tip here>"}}
+No prose, no markdown, no explanation. Just the JSON object."""
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    body = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+        "max_tokens": 600,
+        "temperature": 0.9,  # higher temp for more variety
+    }
+
+    print(f"[INFO] Calling Groq for FRESH tip on '{topic_title}' (avoiding {len(used_tips)} used)...")
+    try:
+        resp = requests.post(GROQ_API_URL, headers=headers, json=body, timeout=GROQ_TIMEOUT_SECONDS)
+    except requests.RequestException as exc:
+        print(f"[WARN] Groq fresh-tip network error: {exc}. Reusing static fact.")
+        return None
+
+    if resp.status_code != 200:
+        print(f"[WARN] Groq fresh-tip returned HTTP {resp.status_code}. Reusing static fact.")
+        return None
+
+    try:
+        data = resp.json()
+        content = data["choices"][0]["message"]["content"]
+    except (ValueError, KeyError, IndexError) as exc:
+        print(f"[WARN] Groq fresh-tip unparseable: {exc}. Reusing static fact.")
+        return None
+
+    # Strip reasoning blocks + markdown fences
+    content = content.strip()
+    content = re.sub(r"<reasoning>.*?</reasoning>", "", content, flags=re.IGNORECASE | re.DOTALL)
+    content = re.sub(r"<reasoning>.*$", "", content, flags=re.IGNORECASE | re.DOTALL)
+    content = content.strip()
+    if content.startswith("```"):
+        lines = content.split("\n")
+        lines = [l for l in lines if not l.strip().startswith("```")]
+        content = "\n".join(lines).strip()
+    first_brace = content.find("{")
+    last_brace = content.rfind("}")
+    if first_brace >= 0 and last_brace > first_brace:
+        content = content[first_brace : last_brace + 1]
+
+    try:
+        parsed = json.loads(content)
+    except json.JSONDecodeError as exc:
+        print(f"[WARN] Groq fresh-tip non-JSON: {exc}. Reusing static fact.")
+        return None
+
+    tip = parsed.get("tip")
+    if not isinstance(tip, str) or len(tip.strip()) < 10:
+        print("[WARN] Groq fresh-tip malformed. Reusing static fact.")
+        return None
+
+    print(f"[INFO] Fresh tip generated: {tip.strip()[:80]}...")
+    return tip.strip()
+
+
+def rotate_hashtags(topic: dict[str, Any], date: dt.date, slot: int) -> list[str]:
+    """Rotate hashtags from the topic's pool. Each topic now has 8 hashtags;
+    pick 5 per post, rotated by (date_hash + slot) so each post uses a different
+    combination. This avoids hashtag repetition across slots on the same day.
+    """
+    pool = topic.get("hashtags") or ["#webdesign", "#freelancewebdesigner", "#smallbusiness"]
+    if len(pool) <= 5:
+        return list(pool)[:5]
+    # Deterministic rotation
+    date_hash = int(hashlib.sha256(date.isoformat().encode()).hexdigest(), 16)
+    start = (date_hash + slot) % len(pool)
+    picked = []
+    for i in range(5):
+        picked.append(pool[(start + i) % len(pool)])
+    return picked
 
 
 # ---------------------------------------------------------------------------
@@ -1179,22 +1348,51 @@ def main() -> int:
             pass
 
     print(f"[INFO] Generating content for {date.isoformat()} (slot {slot})")
-    topic, fact, fact_index = pick_topic_and_fact(date, slot)
+    topic, fact, fact_index = pick_topic_and_fact(date, slot, out_dir=out_dir)
     print(f"[INFO] Topic: {topic['title']} (fact #{fact_index + 1})")
     print(f"[INFO] Seed fact: {fact}")
+
+    # Check if all facts for this topic have been used (pool exhausted).
+    # If so, ask Groq for a fresh tip we haven't used before.
+    used_combos = _load_used_combos(out_dir)
+    facts_for_topic = topic.get("facts") or []
+    used_count_for_topic = sum(1 for fi in range(len(facts_for_topic))
+                                if (topic["title"], fi) in used_combos)
+    pool_exhausted = used_count_for_topic >= len(facts_for_topic)
+    if pool_exhausted:
+        print(f"[INFO] Static fact pool exhausted for '{topic['title']}' "
+              f"({used_count_for_topic}/{len(facts_for_topic)} used). Asking Groq for a fresh tip.")
+        used_tips = _load_used_tips(out_dir, topic["title"], limit=50)
+        fresh_tip = generate_fresh_tip_with_groq(topic["title"], used_tips)
+        if fresh_tip:
+            fact = fresh_tip
+            print(f"[INFO] Using fresh Groq-generated tip instead of static fact.")
+            # Mark fact_index as -1 to signal "fresh tip"
+            fact_index = -1
 
     ai_result = generate_with_groq(topic["title"], fact)
     if ai_result is not None:
         image_headline = ai_result["image_headline"]
         caption = ai_result["caption"]
-        hashtags = ai_result["hashtags"]
+        # Use Groq's hashtags but rotate them with our pool for variety
+        ai_hashtags = ai_result["hashtags"]
+        pool_hashtags = rotate_hashtags(topic, date, slot)
+        # Merge: prefer Groq's first 3 + 2 from rotated pool (deduped)
+        seen = set()
+        hashtags = []
+        for h in ai_hashtags + pool_hashtags:
+            if h not in seen:
+                seen.add(h)
+                hashtags.append(h)
+            if len(hashtags) >= 5:
+                break
         ai_generated = True
         full_caption = caption + "\n\n" + " ".join(hashtags)
     else:
         det = build_deterministic_caption(topic, fact)
         image_headline = det["image_headline"]
         caption = det["caption"]
-        hashtags = det["hashtags"]
+        hashtags = rotate_hashtags(topic, date, slot)
         ai_generated = False
         full_caption = caption + "\n\n" + " ".join(hashtags)
 
@@ -1210,7 +1408,9 @@ def main() -> int:
         "date": date.isoformat(),
         "slot": slot,
         "topic": topic["title"],
+        "fact_index": fact_index,
         "seed_fact": fact,
+        "fresh_tip": pool_exhausted and ai_generated,
         "image_headline": image_headline,
         "caption": full_caption,
         "hashtags": hashtags,
