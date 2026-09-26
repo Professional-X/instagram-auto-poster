@@ -91,6 +91,22 @@
       "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/575c1b405aae64eb45e35fc8edb2d15ed1dd9f44/content/images/2026-09-26-4.png",
       "detail": "Published via Composio",
       "recorded_at": "2026-09-26T16:34:25Z"
+    },
+    {
+      "id": "2026-09-26-1",
+      "date": "2026-09-26",
+      "slot": 1,
+      "topic": "How Long A Website Takes",
+      "fact_index": 8,
+      "seed_fact": "Content writing adds 1-2 weeks. If you write your own text, factor in 5-10 hours of your time.",
+      "fresh_tip": false,
+      "image_style": "palette_typography",
+      "image_headline": "Know Your Website Build Timeline",
+      "status": "published",
+      "media_id": "17959738836210575",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/32e4e4a86a10ff6ae588dadc7e5fcfb18179129e/content/images/2026-09-26-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-09-26T18:17:39Z"
     }
   ]
 }
