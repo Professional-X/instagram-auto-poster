@@ -1,14 +1,1 @@
-{
-  "publications": [
-    {
-      "id": "2026-09-26",
-      "date": "2026-09-26",
-      "topic": "Programming Fact",
-      "status": "failed",
-      "media_id": null,
-      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/f86d8382e343467913d2db74a14c43b7943ccd20/content/images/2026-09-26.png",
-      "detail": "Composio action INSTAGRAM_CREATE_POST was unsuccessful: Failed to create post (status 400). Response: {\"error\":{\"message\":\"Media ID is not available\",\"type\":\"OAuthException\",\"code\":9007,\"error_subcode\":2207027,\"is_transient\":false,\"error_user_title\":\"Cannot Publish\",\"error_user_msg\":\"The media is not ready for publishing, please wait for a moment\",\"fbtrace_id\":\"A4w9CKAxQVbLh_rrz_d40Cy\"}}",
-      "recorded_at": "2026-09-26T06:38:12Z"
-    }
-  ]
-}
+{"publications": []}
