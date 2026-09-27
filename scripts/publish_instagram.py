@@ -406,20 +406,25 @@ def publish(manifest: dict[str, Any], config: dict[str, str]) -> str:
 
 
 def publish_story(manifest: dict[str, Any], config: dict[str, str]) -> str | None:
-    """Publish the same image as an Instagram Story (in addition to the feed post).
-    Returns the Story media ID, or None if it fails (non-fatal — the feed post
-    already succeeded).
+    """Publish the same image as an Instagram Story.
 
-    Stories use the same image_url but with media_type=STORY in the container
-    creation step. No caption needed (Stories don't show captions).
+    NOTE: As of Sept 2026, the Instagram Graph API does NOT support publishing
+    Stories with media_type=STORY for business accounts via the standard
+    /media endpoint. The API returns error 2207023 "Unknown media type".
+    Stories can only be published from the mobile app, or via the Story
+    specific endpoint which requires additional permissions.
+
+    This function attempts the publish but expects it to fail gracefully.
+    If Instagram ever adds Story support, this will start working automatically.
     """
     image_url = manifest.get("image_url")
     ig_user_id = config["INSTAGRAM_USER_ID"]
     if not image_url:
         return None
 
-    print("[INFO] Publishing same image as Instagram Story...")
+    print("[INFO] Attempting Story publish (may fail — IG API has limited Story support)...")
     try:
+        # Try with media_type=STORY (documented but currently rejected by IG)
         container_data = call_composio(
             ACTION_CREATE_CONTAINER,
             arguments={
@@ -435,7 +440,6 @@ def publish_story(manifest: dict[str, Any], config: dict[str, str]) -> str | Non
             return None
 
         print(f"[INFO] Story container created: {creation_id}")
-        # Stories also need readiness check
         wait_until_ready(str(creation_id), config)
 
         publish_data = call_composio(
@@ -452,8 +456,10 @@ def publish_story(manifest: dict[str, Any], config: dict[str, str]) -> str | Non
             return str(story_media_id)
         return None
     except ComposioError as exc:
-        # Non-fatal: the feed post already succeeded. Story is a bonus.
-        print(f"[WARN] Story publish failed (non-fatal, feed post already live): {exc}")
+        # Expected: Instagram returns "Unknown media type" for STORY.
+        # Non-fatal: the feed post already succeeded.
+        print(f"[INFO] Story publish skipped (IG API limitation): {str(exc)[:100]}")
+        print("[INFO] Stories must be published manually from the Instagram app for now.")
         return None
 
 

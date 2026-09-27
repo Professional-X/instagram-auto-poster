@@ -127,17 +127,43 @@ def mark_seen(recipient_id: str, config: dict[str, str]) -> None:
 def extract_recipient_from_conversation(convo: dict[str, Any]) -> str | None:
     """Extract the recipient PSID from a conversation object.
     IG Graph API conversation structure varies; try multiple fields.
+    Returns a NUMERIC PSID string (e.g. '1234567890'), NOT the conversation ID.
     """
     # Try common fields
     recipients = convo.get("recipients") or convo.get("participants") or {}
     if isinstance(recipients, dict):
         data = recipients.get("data") or []
         if data and isinstance(data, list):
-            return data[0].get("id")
+            for r in data:
+                rid = r.get("id")
+                if rid and str(rid).isdigit():
+                    return str(rid)
     if isinstance(recipients, list) and recipients:
-        return recipients[0].get("id")
-    # Sometimes the id IS the conversation id, sometimes it's separate
-    return convo.get("id")
+        for r in recipients:
+            rid = r.get("id")
+            if rid and str(rid).isdigit():
+                return str(rid)
+    # Fall back to conversation id ONLY if it's numeric; otherwise return None
+    # (conversation IDs like 'aWdfZAG...' are NOT valid recipient IDs)
+    convo_id = convo.get("id", "")
+    if str(convo_id).isdigit():
+        return str(convo_id)
+    return None
+
+
+def extract_recipient_from_messages(messages: list[dict[str, Any]],
+                                      our_user_id: str) -> str | None:
+    """Find the recipient PSID from the messages in a conversation.
+    Look at the latest message NOT sent by us — its from.id is the recipient.
+    Returns a NUMERIC PSID string, or None if not found.
+    """
+    for msg in messages:
+        msg_from = msg.get("from") or {}
+        from_id = msg_from.get("id")
+        # Skip messages from us (our_user_id)
+        if from_id and str(from_id) != str(our_user_id) and str(from_id).isdigit():
+            return str(from_id)
+    return None
 
 
 def main() -> int:
@@ -230,14 +256,27 @@ def main() -> int:
             total_skipped += 1
             continue
 
-        # Get recipient ID to send the DM
-        recipient_id = extract_recipient_from_conversation(convo)
+        # Get recipient ID to send the DM.
+        # PRIMARY: extract from messages (the from.id of the latest message
+        # not sent by us). This is the reliable method.
+        # FALLBACK: extract from conversation participants (if numeric).
+        our_user_id = config.get("INSTAGRAM_USER_ID", "")
+        recipient_id = extract_recipient_from_messages(messages, our_user_id)
         if not recipient_id:
-            print(f"[WARN] Could not extract recipient ID for conversation {convo_id}")
-            total_errors += 1
+            recipient_id = extract_recipient_from_conversation(convo)
+        if not recipient_id:
+            print(f"[WARN] Could not extract numeric recipient ID for conversation {convo_id}. "
+                  f"Skipping (Instagram requires numeric PSID, not conversation ID).")
+            replied_map[convo_id] = {
+                "status": "no_recipient_id",
+                "messages_count": len(messages),
+                "last_message": str(msg_text)[:80],
+                "replied_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            }
+            total_skipped += 1
             continue
 
-        print(f"[INFO] New DM conversation {convo_id} (recipient={recipient_id}, "
+        print(f"[INFO] New DM conversation {convo_id} (recipient PSID={recipient_id}, "
               f"msg='{str(msg_text)[:60]}'). Sending intake message...")
 
         try:
