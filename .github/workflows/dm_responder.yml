@@ -1,0 +1,81 @@
+name: Instagram DM Auto-Responder
+
+# Runs every hour to scan new DM conversations and auto-reply with intake
+# questions (budget / timeline / project type). Captures leads 24/7.
+on:
+  workflow_dispatch:
+    inputs:
+      hours:
+        description: "Only reply to DMs from last N hours (default 24)"
+        required: false
+        default: "24"
+      dry_run:
+        description: "Dry-run: list conversations that would get auto-replied, but don't reply."
+        type: boolean
+        required: false
+        default: false
+
+  schedule:
+    - cron: "0 * * * *"    # Every hour
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-dm-responder
+  cancel-in-progress: false
+
+jobs:
+  dm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      COMPOSIO_API_KEY: ${{ secrets.COMPOSIO_API_KEY }}
+      COMPOSIO_CONNECTED_ACCOUNT_ID: ${{ secrets.COMPOSIO_CONNECTED_ACCOUNT_ID }}
+      COMPOSIO_USER_ID: ${{ secrets.COMPOSIO_USER_ID }}
+      INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run DM responder
+        run: |
+          HOURS="${{ github.event.inputs.hours || '24' }}"
+          DRY_FLAG=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+          python scripts/dm_responder.py \
+            --replied content/dm_replied.json \
+            --hours "$HOURS" \
+            $DRY_FLAG
+
+      - name: Commit dm_replied.json
+        if: always()
+        run: |
+          git add content/dm_replied.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "[INFO] No DM tracker changes to commit."
+          else
+            git commit -m "chore(dm): updated DM auto-responder tracker"
+            git push
+          fi

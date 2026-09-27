@@ -405,6 +405,132 @@ def publish(manifest: dict[str, Any], config: dict[str, str]) -> str:
     return str(media_id)
 
 
+def publish_story(manifest: dict[str, Any], config: dict[str, str]) -> str | None:
+    """Publish the same image as an Instagram Story (in addition to the feed post).
+    Returns the Story media ID, or None if it fails (non-fatal — the feed post
+    already succeeded).
+
+    Stories use the same image_url but with media_type=STORY in the container
+    creation step. No caption needed (Stories don't show captions).
+    """
+    image_url = manifest.get("image_url")
+    ig_user_id = config["INSTAGRAM_USER_ID"]
+    if not image_url:
+        return None
+
+    print("[INFO] Publishing same image as Instagram Story...")
+    try:
+        container_data = call_composio(
+            ACTION_CREATE_CONTAINER,
+            arguments={
+                "ig_user_id": ig_user_id,
+                "image_url": image_url,
+                "media_type": "STORY",
+            },
+            config=config,
+        )
+        creation_id = container_data.get("id") or container_data.get("container_id")
+        if not creation_id:
+            print("[WARN] Story container creation returned no id. Skipping Story.")
+            return None
+
+        print(f"[INFO] Story container created: {creation_id}")
+        # Stories also need readiness check
+        wait_until_ready(str(creation_id), config)
+
+        publish_data = call_composio(
+            ACTION_CREATE_POST,
+            arguments={
+                "ig_user_id": ig_user_id,
+                "creation_id": str(creation_id),
+            },
+            config=config,
+        )
+        story_media_id = publish_data.get("id") or publish_data.get("media_id")
+        if story_media_id:
+            print(f"[INFO] Story published! Media ID: {story_media_id}")
+            return str(story_media_id)
+        return None
+    except ComposioError as exc:
+        # Non-fatal: the feed post already succeeded. Story is a bonus.
+        print(f"[WARN] Story publish failed (non-fatal, feed post already live): {exc}")
+        return None
+
+
+def publish_carousel(manifest: dict[str, Any], config: dict[str, str],
+                     children_image_urls: list[str]) -> str:
+    """Publish a carousel post (multiple swipeable images).
+    children_image_urls: list of 2-10 public image URLs for the carousel slides.
+
+    Flow:
+      1. For each child image: CREATE_MEDIA_CONTAINER with is_carousel_item=true
+      2. CREATE_CAROUSEL_CONTAINER with children=[creation_id, ...]
+      3. Wait for readiness
+      4. CREATE_POST with the carousel container's creation_id
+    """
+    ig_user_id = config["INSTAGRAM_USER_ID"]
+    caption = manifest.get("caption", "")
+    if not caption:
+        raise ComposioError("Manifest is missing `caption` for carousel.")
+    if len(children_image_urls) < 2 or len(children_image_urls) > 10:
+        raise ComposioError(f"Carousel needs 2-10 images, got {len(children_image_urls)}.")
+
+    print(f"[INFO] Publishing carousel with {len(children_image_urls)} slides...")
+
+    # Step 1: create a container for each child image
+    child_creation_ids: list[str] = []
+    for i, img_url in enumerate(children_image_urls):
+        print(f"[INFO] Creating carousel child container {i+1}/{len(children_image_urls)}...")
+        child_data = call_composio(
+            ACTION_CREATE_CONTAINER,
+            arguments={
+                "ig_user_id": ig_user_id,
+                "image_url": img_url,
+                "is_carousel_item": True,
+            },
+            config=config,
+        )
+        child_id = child_data.get("id") or child_data.get("container_id")
+        if not child_id:
+            raise ComposioError(f"Carousel child {i+1} container creation returned no id.")
+        child_creation_ids.append(str(child_id))
+        print(f"[INFO] Child {i+1} container: {child_id}")
+
+    # Step 2: create the carousel container
+    print(f"[INFO] Creating carousel container with {len(child_creation_ids)} children...")
+    carousel_data = call_composio(
+        "INSTAGRAM_CREATE_CAROUSEL_CONTAINER",
+        arguments={
+            "ig_user_id": ig_user_id,
+            "children": child_creation_ids,
+            "caption": caption,
+        },
+        config=config,
+    )
+    carousel_creation_id = carousel_data.get("id") or carousel_data.get("container_id")
+    if not carousel_creation_id:
+        raise ComposioError("Carousel container creation returned no id.")
+    print(f"[INFO] Carousel container: {carousel_creation_id}")
+
+    # Step 3: wait for readiness
+    wait_until_ready(str(carousel_creation_id), config)
+
+    # Step 4: publish
+    publish_data = call_composio(
+        ACTION_CREATE_POST,
+        arguments={
+            "ig_user_id": ig_user_id,
+            "creation_id": str(carousel_creation_id),
+        },
+        config=config,
+    )
+    media_id = publish_data.get("id") or publish_data.get("media_id")
+    if not media_id:
+        raise ComposioError("Carousel CREATE_POST did not return an id.")
+    print(f"[INFO] Carousel published! Media ID: {media_id}")
+    return str(media_id)
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -414,6 +540,10 @@ def main() -> int:
     parser.add_argument("--manifest", required=True, help="Path to the content manifest JSON.")
     parser.add_argument("--history", default="content/history.json", help="Path to history.json for idempotency.")
     parser.add_argument("--dry-run", action="store_true", help="Skip the actual Composio call; just validate.")
+    parser.add_argument("--also-story", action="store_true", default=True,
+                        help="Also publish as Instagram Story (default: True).")
+    parser.add_argument("--no-story", action="store_true", help="Skip Story publishing.")
+    parser.add_argument("--carousel-children", help="Comma-separated list of additional image URLs for carousel mode.")
     args = parser.parse_args()
 
     manifest_path = Path(args.manifest).resolve()
@@ -443,6 +573,29 @@ def main() -> int:
     config = load_config()
     verify_connected_account(config)
 
+    # Carousel mode: multiple images
+    if args.carousel_children:
+        children_urls = [u.strip() for u in args.carousel_children.split(",") if u.strip()]
+        # Prepend the manifest's own image_url as slide 1
+        all_urls = [manifest["image_url"]] + children_urls
+        try:
+            media_id = publish_carousel(manifest, config, all_urls)
+            story_media_id = None
+            if args.also_story and not args.no_story:
+                story_media_id = publish_story(manifest, config)
+        except ComposioError as exc:
+            print(f"[ERROR] Carousel publish failed: {exc}", file=sys.stderr)
+            record_publication(history, history_path, manifest, media_id=None,
+                               status="failed", detail=str(exc))
+            return 1
+        record_publication(history, history_path, manifest, media_id=media_id,
+                           status="published",
+                           detail=f"Carousel ({len(all_urls)} slides) via Composio" +
+                                  (f" + Story {story_media_id}" if story_media_id else ""))
+        print("[INFO] Done.")
+        return 0
+
+    # Standard single-image publish
     try:
         media_id = publish(manifest, config)
     except ComposioError as exc:
@@ -451,8 +604,16 @@ def main() -> int:
                            status="failed", detail=str(exc))
         return 1
 
+    # Also publish as Story (default behavior)
+    story_media_id = None
+    if args.also_story and not args.no_story:
+        story_media_id = publish_story(manifest, config)
+
+    detail = "Published via Composio"
+    if story_media_id:
+        detail += f" + Story {story_media_id}"
     record_publication(history, history_path, manifest, media_id=media_id,
-                       status="published", detail="Published via Composio")
+                       status="published", detail=detail)
     print("[INFO] Done.")
     return 0
 

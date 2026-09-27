@@ -1,0 +1,76 @@
+name: Instagram Analytics
+
+# Runs daily at 22:00 IST (16:30 UTC) to pull insights for posts published
+# 24-48h ago, and record follower growth. Data feeds into the weekly report.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run: skip Composio calls."
+        type: boolean
+        required: false
+        default: false
+
+  schedule:
+    - cron: "30 16 * * *"    # 22:00 IST daily
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram-analytics
+  cancel-in-progress: false
+
+jobs:
+  analytics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      COMPOSIO_API_KEY: ${{ secrets.COMPOSIO_API_KEY }}
+      COMPOSIO_CONNECTED_ACCOUNT_ID: ${{ secrets.COMPOSIO_CONNECTED_ACCOUNT_ID }}
+      COMPOSIO_USER_ID: ${{ secrets.COMPOSIO_USER_ID }}
+      INSTAGRAM_USER_ID: ${{ secrets.INSTAGRAM_USER_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run analytics
+        run: |
+          DRY_FLAG=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+          python scripts/analytics.py \
+            --history content/history.json \
+            --analytics content/analytics.json \
+            $DRY_FLAG
+
+      - name: Commit analytics.json
+        if: always()
+        run: |
+          git add content/analytics.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "[INFO] No analytics changes to commit."
+          else
+            git commit -m "chore(analytics): daily insights + follower growth"
+            git push
+          fi
