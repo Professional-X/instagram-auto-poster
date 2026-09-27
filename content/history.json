@@ -155,6 +155,22 @@
       "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/e207813e8d2f139b41c74de3e114eb0ffe7997f4/content/images/2026-09-27-2.png",
       "detail": "Published via Composio",
       "recorded_at": "2026-09-27T08:28:29Z"
+    },
+    {
+      "id": "2026-09-27-1",
+      "date": "2026-09-27",
+      "slot": 1,
+      "topic": "What A Website Really Costs",
+      "fact_index": 17,
+      "seed_fact": "Hourly rates ($50-$150/hr) make sense for small fixes. Project rates ($500-$5000) for full builds.",
+      "fresh_tip": false,
+      "image_style": "before_after",
+      "image_headline": "Know Your Website Investment",
+      "status": "published",
+      "media_id": "18042937760831666",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/e4e9c98bb59a16950b94c0fc82652b0ae8031788/content/images/2026-09-27-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-09-27T17:07:57Z"
     }
   ]
 }
