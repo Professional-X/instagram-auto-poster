@@ -33,11 +33,4 @@ jobs:
         run: |
           mkdir -p .github
           date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/keepalive.txt
-          git add .github/keepalive.txt
-          if git diff --cached --quiet; then
-            echo "[INFO] No changes — already up to date."
-          else
-            git commit -m "chore: weekly keepalive ping"
-            git push
-            echo "[INFO] Keepalive committed + pushed. Repo activity reset for 60 days."
-          fi
+          bash scripts/git_push_retry.sh "chore: weekly keepalive ping" ".github/keepalive.txt"
