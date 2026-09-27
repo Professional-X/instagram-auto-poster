@@ -139,6 +139,22 @@
       "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/2e242a044c1a47d861486e90deff74c59650b875/content/images/2026-09-27-4.png",
       "detail": "Published via Composio",
       "recorded_at": "2026-09-27T03:26:24Z"
+    },
+    {
+      "id": "2026-09-27-2",
+      "date": "2026-09-27",
+      "slot": 2,
+      "topic": "Signs You Need A Redesign",
+      "fact_index": 18,
+      "seed_fact": "If your site looks identical to 5 competitors, you're not standing out. Differentiate.",
+      "fresh_tip": false,
+      "image_style": "palette_typography",
+      "image_headline": "Blend In or Stand Out?",
+      "status": "published",
+      "media_id": "18116294906052136",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/e207813e8d2f139b41c74de3e114eb0ffe7997f4/content/images/2026-09-27-2.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-09-27T08:28:29Z"
     }
   ]
 }
