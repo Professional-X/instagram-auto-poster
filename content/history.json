@@ -123,6 +123,22 @@
       "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/d91ee2b6daaa5843aef8b23a5a02050f4331e45f/content/images/2026-09-27-3.png",
       "detail": "Published via Composio",
       "recorded_at": "2026-09-27T03:01:10Z"
+    },
+    {
+      "id": "2026-09-27-4",
+      "date": "2026-09-27",
+      "slot": 4,
+      "topic": "How Long A Website Takes",
+      "fact_index": 20,
+      "seed_fact": "Mobile optimization adds 3-5 days. Don't accept a 'desktop only' site in 2025.",
+      "fresh_tip": false,
+      "image_style": "component_grid",
+      "image_headline": "Don't lose customers on mobile",
+      "status": "published",
+      "media_id": "18115675436078520",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/2e242a044c1a47d861486e90deff74c59650b875/content/images/2026-09-27-4.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-09-27T03:26:24Z"
     }
   ]
 }
