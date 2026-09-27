@@ -1,0 +1,43 @@
+name: Keepalive
+
+# GitHub disables scheduled workflows on repos with no activity for 60 days.
+# This workflow commits a tiny timestamp file once a week to keep the repo
+# "active" so all the scheduled crons (publish, auto-reply, analytics, etc.)
+# keep firing forever. Zero maintenance required.
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "0 0 * * 1"    # Every Monday 00:00 UTC
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+      - name: Touch keepalive file
+        run: |
+          mkdir -p .github
+          date -u +"%Y-%m-%dT%H:%M:%SZ" > .github/keepalive.txt
+          git add .github/keepalive.txt
+          if git diff --cached --quiet; then
+            echo "[INFO] No changes — already up to date."
+          else
+            git commit -m "chore: weekly keepalive ping"
+            git push
+            echo "[INFO] Keepalive committed + pushed. Repo activity reset for 60 days."
+          fi
