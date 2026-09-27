@@ -68,10 +68,4 @@ jobs:
       - name: Commit report
         if: always()
         run: |
-          git add reports/ 2>/dev/null || true
-          if git diff --cached --quiet; then
-            echo "[INFO] No report changes to commit."
-          else
-            git commit -m "report: weekly performance summary"
-            git push
-          fi
+          bash scripts/git_push_retry.sh "report: weekly performance summary" "reports/" || true

@@ -86,13 +86,7 @@ jobs:
       - name: Commit replied_comments.json
         if: always()
         run: |
-          git add content/replied_comments.json 2>/dev/null || true
-          if git diff --cached --quiet; then
-            echo "[INFO] No replied_comments changes to commit."
-          else
-            git commit -m "chore(auto-reply): updated replied comments tracker"
-            git push
-          fi
+          bash scripts/git_push_retry.sh "chore(auto-reply): updated replied comments tracker" "content/replied_comments.json" || true
 
       - name: Summary
         if: always()

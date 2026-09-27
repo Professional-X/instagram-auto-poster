@@ -67,10 +67,4 @@ jobs:
       - name: Commit analytics.json
         if: always()
         run: |
-          git add content/analytics.json 2>/dev/null || true
-          if git diff --cached --quiet; then
-            echo "[INFO] No analytics changes to commit."
-          else
-            git commit -m "chore(analytics): daily insights + follower growth"
-            git push
-          fi
+          bash scripts/git_push_retry.sh "chore(analytics): daily insights + follower growth" "content/analytics.json" || true

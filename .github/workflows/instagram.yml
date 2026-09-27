@@ -118,15 +118,9 @@ jobs:
           SLOT="${{ steps.meta.outputs.slot }}"
           IMAGE_PATH="content/images/${DATE}-${SLOT}.png"
           if [ -f "$IMAGE_PATH" ]; then
-            git add "$IMAGE_PATH"
-            if git diff --cached --quiet; then
-              echo "[INFO] Image unchanged; no commit needed."
-            else
-              git commit -m "chore(content): generated image for ${DATE} slot ${SLOT}"
-              git push
-              echo "[INFO] Image pushed. Waiting 20s for raw URL CDN propagation..."
-              sleep 20
-            fi
+            bash scripts/git_push_retry.sh "chore(content): generated image for ${DATE} slot ${SLOT}" "$IMAGE_PATH"
+            echo "[INFO] Waiting 20s for raw URL CDN propagation..."
+            sleep 20
           else
             echo "[ERROR] Image file not found at $IMAGE_PATH" && exit 1
           fi
@@ -175,13 +169,7 @@ jobs:
         run: |
           DATE="${{ steps.meta.outputs.date }}"
           SLOT="${{ steps.meta.outputs.slot }}"
-          git add "content/history.json" "content/${DATE}-${SLOT}.json" 2>/dev/null || true
-          if git diff --cached --quiet; then
-            echo "[INFO] No history/manifest changes to commit."
-          else
-            git commit -m "chore(content): record publication for ${DATE} slot ${SLOT}"
-            git push
-          fi
+          bash scripts/git_push_retry.sh "chore(content): record publication for ${DATE} slot ${SLOT}" "content/history.json" "content/${DATE}-${SLOT}.json" || true
 
       - name: Summary
         if: always()
