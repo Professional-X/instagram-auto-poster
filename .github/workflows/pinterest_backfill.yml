@@ -1,0 +1,76 @@
+name: Pinterest Backfill (one-time)
+
+# One-time workflow to backfill all existing Instagram posts to Pinterest.
+# After this runs, the main instagram.yml workflow will cross-post every
+# NEW post to Pinterest automatically.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run: list what would be backfilled, don't actually pin."
+        type: boolean
+        required: false
+        default: false
+      limit:
+        description: "Max posts to backfill (0 = all)"
+        required: false
+        default: "0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pinterest-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      COMPOSIO_API_KEY: ${{ secrets.COMPOSIO_API_KEY }}
+      COMPOSIO_USER_ID: ${{ secrets.COMPOSIO_USER_ID }}
+      PINTEREST_CONNECTED_ACCOUNT_ID: ${{ secrets.PINTEREST_CONNECTED_ACCOUNT_ID }}
+      PINTEREST_USER_ID: ${{ secrets.PINTEREST_USER_ID }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Pinterest backfill
+        run: |
+          DRY_FLAG=""
+          LIMIT="${{ github.event.inputs.limit || '0' }}"
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            DRY_FLAG="--dry-run"
+          fi
+          python scripts/backfill_pinterest.py \
+            --history content/history.json \
+            --board-name "Web Design Tips for Small Business" \
+            --limit "$LIMIT" \
+            $DRY_FLAG
+
+      - name: Commit history.json (with new pinterest_pin_ids)
+        if: always()
+        run: |
+          bash scripts/git_push_retry.sh "chore(pinterest): backfill — added pinterest_pin_ids to history" "content/history.json" || true
