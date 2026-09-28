@@ -171,6 +171,22 @@
       "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/e4e9c98bb59a16950b94c0fc82652b0ae8031788/content/images/2026-09-27-1.png",
       "detail": "Published via Composio",
       "recorded_at": "2026-09-27T17:07:57Z"
+    },
+    {
+      "id": "2026-09-28-2",
+      "date": "2026-09-28",
+      "slot": 2,
+      "topic": "Why You Need A Website",
+      "fact_index": 15,
+      "seed_fact": "Customers trust businesses with .com domains 4x more than businesses with only social profiles.",
+      "fresh_tip": false,
+      "image_style": "phone_mobile",
+      "image_headline": "Your .com builds trust instantly",
+      "status": "published",
+      "media_id": "17971910529154041",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/50446b9c52f7a378e5c1b79f17056706f568e216/content/images/2026-09-28-2.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-09-28T08:53:14Z"
     }
   ]
 }
