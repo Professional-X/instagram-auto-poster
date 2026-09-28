@@ -226,6 +226,25 @@
       "pinterest_pin_id": "1021543128000175315",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-09-28T14:19:29Z"
+    },
+    {
+      "id": "2026-09-28-4",
+      "date": "2026-09-28",
+      "slot": 4,
+      "topic": "What A Website Really Costs",
+      "fact_index": 18,
+      "seed_fact": "Hidden costs to ask about: stock photo licenses, font licenses, plugin renewals, hosting migrations.",
+      "fresh_tip": false,
+      "image_style": "palette_typography",
+      "image_headline": "Your website’s hidden costs revealed",
+      "status": "published",
+      "media_id": "18082618847361976",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/adb47e40f2b3120ebbd21e94198f4eec642e2a30/content/images/2026-09-28-4.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-09-28T15:03:26Z",
+      "pinterest_pin_id": "1021543128000176302",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-09-28T15:03:30Z"
     }
   ]
 }
