@@ -245,6 +245,25 @@
       "pinterest_pin_id": "1021543128000176302",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-09-28T15:03:30Z"
+    },
+    {
+      "id": "2026-09-28-1",
+      "date": "2026-09-28",
+      "slot": 1,
+      "topic": "Local SEO For Small Business",
+      "fact_index": 14,
+      "seed_fact": "Local citations (consistent NAP on 30+ directories) boost map pack rankings. Use BrightLocal.",
+      "fresh_tip": false,
+      "image_style": "browser_hero",
+      "image_headline": "Get Found on Google Maps",
+      "status": "published",
+      "media_id": "18341132905248366",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/4f51fd368e6a173450b2c7af0d914fa16f9564e9/content/images/2026-09-28-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-09-28T19:46:48Z",
+      "pinterest_pin_id": "1021543128000183278",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-09-28T19:46:52Z"
     }
   ]
 }
