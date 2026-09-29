@@ -264,6 +264,25 @@
       "pinterest_pin_id": "1021543128000183278",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-09-28T19:46:52Z"
+    },
+    {
+      "id": "2026-09-29-2",
+      "date": "2026-09-29",
+      "slot": 2,
+      "topic": "WordPress vs Wix vs Custom",
+      "fact_index": 22,
+      "seed_fact": "WordPress with managed hosting (WP Engine, Kinsta) eliminates 90% of maintenance headaches.",
+      "fresh_tip": false,
+      "image_style": "component_grid",
+      "image_headline": "Stop Website Maintenance Nightmares",
+      "status": "published",
+      "media_id": "18626354506057368",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/f79355c9942fda2005a01ac46152752600159141/content/images/2026-09-29-2.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-09-29T08:53:36Z",
+      "pinterest_pin_id": "1021543128000198308",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-09-29T08:53:40Z"
     }
   ]
 }

@@ -1,0 +1,25 @@
+{
+  "id": "2026-09-29-2",
+  "date": "2026-09-29",
+  "slot": 2,
+  "topic": "WordPress vs Wix vs Custom",
+  "fact_index": 22,
+  "seed_fact": "WordPress with managed hosting (WP Engine, Kinsta) eliminates 90% of maintenance headaches.",
+  "fresh_tip": false,
+  "image_headline": "Stop Website Maintenance Nightmares",
+  "caption": "Your site shouldn't keep you up at night. Choosing WordPress on a managed host like WP Engine or Kinsta means updates, security and backups are handled for you—so you can focus on your business, not on tech headaches. DM me to see if this is right for your business.\n\n#webdesign #smallbusiness #wordpress #managedhosting #websitemaintenance",
+  "hashtags": [
+    "#webdesign",
+    "#smallbusiness",
+    "#wordpress",
+    "#managedhosting",
+    "#websitemaintenance"
+  ],
+  "image_file": "content/images/2026-09-29-2.png",
+  "image_filename": "2026-09-29-2.png",
+  "ai_generated": true,
+  "generator": "groq",
+  "image_style": "component_grid",
+  "style_index": 5,
+  "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/f79355c9942fda2005a01ac46152752600159141/content/images/2026-09-29-2.png"
+}
