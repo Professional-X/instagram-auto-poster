@@ -321,6 +321,25 @@
       "pinterest_pin_id": "1021543128000209656",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-09-29T18:11:26Z"
+    },
+    {
+      "id": "2026-09-30-3",
+      "date": "2026-09-30",
+      "slot": 3,
+      "topic": "What A Website Really Costs",
+      "fact_index": 20,
+      "seed_fact": "Beware designers who quote 'a few hundred' then charge $1000+ for 'extras' like contact forms.",
+      "fresh_tip": false,
+      "image_style": "stats_callout",
+      "image_headline": "Hidden Fees Drain Your Budget",
+      "status": "published",
+      "media_id": "18123441604906377",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/b81182d73e6e66e03a1c73186c493ad7aeeb1808/content/images/2026-09-30-3.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-09-30T13:23:57Z",
+      "pinterest_pin_id": "1021543128000232028",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-09-30T13:24:02Z"
     }
   ]
 }
