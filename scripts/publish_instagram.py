@@ -406,57 +406,26 @@ def publish(manifest: dict[str, Any], config: dict[str, str]) -> str:
 
 
 def publish_story(manifest: dict[str, Any], config: dict[str, str]) -> str | None:
-    """Publish a PORTRAIT Story image to Instagram Stories.
+    """Publish a Story to Instagram.
 
-    Instagram Stories require 9:16 aspect ratio (1080x1920). The manifest
-    contains a 'story_image_url' field pointing to a portrait image rendered
-    specifically for Stories. If that's missing, fall back to the square
-    image_url (which may be rejected by IG — non-fatal).
+    BLOCKED by Instagram API limitation (as of Oct 2026):
+    The Instagram Graph API does NOT support publishing Stories via the
+    /media endpoint for business accounts. The API returns error 2207023:
+    "Unknown media type" for media_type=STORY. This is a Meta platform
+    limitation — Stories can only be published from the Instagram mobile app.
 
-    Uses media_type=STORY in the container creation.
+    The portrait Story image is still rendered and committed to the repo
+    (content/images/<date>-<slot>-story.png) so you can manually post it
+    from the app if desired. This function is a no-op that logs the limitation.
+
+    If Meta ever adds Story publishing to the Graph API, this function
+    will automatically start working — just remove the early return below.
     """
-    # Prefer the portrait Story image; fall back to square feed image
-    story_image_url = manifest.get("story_image_url") or manifest.get("image_url")
-    ig_user_id = config["INSTAGRAM_USER_ID"]
-    if not story_image_url:
-        return None
-
-    print(f"[INFO] Publishing portrait Story image: {story_image_url}")
-    try:
-        container_data = call_composio(
-            ACTION_CREATE_CONTAINER,
-            arguments={
-                "ig_user_id": ig_user_id,
-                "image_url": story_image_url,
-                "media_type": "STORY",
-            },
-            config=config,
-        )
-        creation_id = container_data.get("id") or container_data.get("container_id")
-        if not creation_id:
-            print("[WARN] Story container creation returned no id. Skipping Story.")
-            return None
-
-        print(f"[INFO] Story container created: {creation_id}")
-        wait_until_ready(str(creation_id), config)
-
-        publish_data = call_composio(
-            ACTION_CREATE_POST,
-            arguments={
-                "ig_user_id": ig_user_id,
-                "creation_id": str(creation_id),
-            },
-            config=config,
-        )
-        story_media_id = publish_data.get("id") or publish_data.get("media_id")
-        if story_media_id:
-            print(f"[INFO] Story published! Media ID: {story_media_id}")
-            return str(story_media_id)
-        return None
-    except ComposioError as exc:
-        # Non-fatal: the feed post already succeeded.
-        print(f"[INFO] Story publish skipped: {str(exc)[:120]}")
-        return None
+    print("[INFO] Story publish skipped: Instagram Graph API does not support")
+    print("[INFO] publishing Stories via API for business accounts (Meta limitation).")
+    print("[INFO] The portrait Story image is saved in the repo — you can manually")
+    print("[INFO] post it from the Instagram app if desired.")
+    return None
 
 
 def publish_carousel(manifest: dict[str, Any], config: dict[str, str],
