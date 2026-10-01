@@ -120,8 +120,9 @@ jobs:
           DATE="${{ steps.meta.outputs.date }}"
           SLOT="${{ steps.meta.outputs.slot }}"
           IMAGE_PATH="content/images/${DATE}-${SLOT}.png"
+          STORY_PATH="content/images/${DATE}-${SLOT}-story.png"
           if [ -f "$IMAGE_PATH" ]; then
-            bash scripts/git_push_retry.sh "chore(content): generated image for ${DATE} slot ${SLOT}" "$IMAGE_PATH"
+            bash scripts/git_push_retry.sh "chore(content): generated image for ${DATE} slot ${SLOT}" "$IMAGE_PATH" "$STORY_PATH"
             echo "[INFO] Waiting 20s for raw URL CDN propagation..."
             sleep 20
           else
@@ -137,8 +138,11 @@ jobs:
           OWNER="${{ github.repository_owner }}"
           REPO="${{ github.event.repository.name }}"
           RAW_URL="https://raw.githubusercontent.com/${OWNER}/${REPO}/${SHA}/content/images/${DATE}-${SLOT}.png"
+          STORY_URL="https://raw.githubusercontent.com/${OWNER}/${REPO}/${SHA}/content/images/${DATE}-${SLOT}-story.png"
           echo "image_url=$RAW_URL" >> "$GITHUB_OUTPUT"
+          echo "story_url=$STORY_URL" >> "$GITHUB_OUTPUT"
           echo "[INFO] Image URL: $RAW_URL"
+          echo "[INFO] Story URL: $STORY_URL"
 
           python - <<PY
           import json
@@ -148,9 +152,10 @@ jobs:
           with open(path, "r", encoding="utf-8") as f:
               data = json.load(f)
           data["image_url"] = "${RAW_URL}"
+          data["story_image_url"] = "${STORY_URL}"
           with open(path, "w", encoding="utf-8") as f:
               json.dump(data, f, indent=2, ensure_ascii=False)
-          print(f"[INFO] Patched {path} with image_url")
+          print(f"[INFO] Patched {path} with image_url + story_image_url")
           PY
 
       - name: Publish via Composio

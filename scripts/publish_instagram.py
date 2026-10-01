@@ -406,30 +406,28 @@ def publish(manifest: dict[str, Any], config: dict[str, str]) -> str:
 
 
 def publish_story(manifest: dict[str, Any], config: dict[str, str]) -> str | None:
-    """Publish the same image as an Instagram Story.
+    """Publish a PORTRAIT Story image to Instagram Stories.
 
-    NOTE: As of Sept 2026, the Instagram Graph API does NOT support publishing
-    Stories with media_type=STORY for business accounts via the standard
-    /media endpoint. The API returns error 2207023 "Unknown media type".
-    Stories can only be published from the mobile app, or via the Story
-    specific endpoint which requires additional permissions.
+    Instagram Stories require 9:16 aspect ratio (1080x1920). The manifest
+    contains a 'story_image_url' field pointing to a portrait image rendered
+    specifically for Stories. If that's missing, fall back to the square
+    image_url (which may be rejected by IG — non-fatal).
 
-    This function attempts the publish but expects it to fail gracefully.
-    If Instagram ever adds Story support, this will start working automatically.
+    Uses media_type=STORY in the container creation.
     """
-    image_url = manifest.get("image_url")
+    # Prefer the portrait Story image; fall back to square feed image
+    story_image_url = manifest.get("story_image_url") or manifest.get("image_url")
     ig_user_id = config["INSTAGRAM_USER_ID"]
-    if not image_url:
+    if not story_image_url:
         return None
 
-    print("[INFO] Attempting Story publish (may fail — IG API has limited Story support)...")
+    print(f"[INFO] Publishing portrait Story image: {story_image_url}")
     try:
-        # Try with media_type=STORY (documented but currently rejected by IG)
         container_data = call_composio(
             ACTION_CREATE_CONTAINER,
             arguments={
                 "ig_user_id": ig_user_id,
-                "image_url": image_url,
+                "image_url": story_image_url,
                 "media_type": "STORY",
             },
             config=config,
@@ -456,10 +454,8 @@ def publish_story(manifest: dict[str, Any], config: dict[str, str]) -> str | Non
             return str(story_media_id)
         return None
     except ComposioError as exc:
-        # Expected: Instagram returns "Unknown media type" for STORY.
         # Non-fatal: the feed post already succeeded.
-        print(f"[INFO] Story publish skipped (IG API limitation): {str(exc)[:100]}")
-        print("[INFO] Stories must be published manually from the Instagram app for now.")
+        print(f"[INFO] Story publish skipped: {str(exc)[:120]}")
         return None
 
 

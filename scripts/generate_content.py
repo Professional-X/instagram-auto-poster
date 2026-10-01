@@ -1293,6 +1293,81 @@ def render_image(out_path: Path, topic: dict[str, Any], headline: str,
     return style_name
 
 
+def render_story_image(out_path: Path, topic: dict[str, Any], headline: str,
+                        date: dt.date, slot: int) -> str:
+    """Render a PORTRAIT 1080x1920 image for Instagram Stories.
+
+    Instagram Stories require 9:16 aspect ratio (1080x1920). We can't reuse
+    the square feed image — IG rejects it with "Unknown media type" or aspect
+    ratio errors. This function renders a dedicated Story image with:
+    - Vertical gradient background (using the topic's palette)
+    - Topic title at top
+    - Headline centered (larger font, wrapped)
+    - DM CTA at bottom
+    """
+    if Image is None:
+        raise RuntimeError(f"Pillow is required: {_PILLOW_ERR}")
+
+    width, height = 1080, 1920
+    title = topic.get("title", "Daily Tip")
+    palette = _palette_for(title)
+
+    # Vertical gradient background
+    img = Image.new("RGB", (width, height), palette["primary"])
+    _vertical_gradient_v2(img, palette["primary"], palette["dark"])
+
+    draw = ImageDraw.Draw(img)
+
+    # Top: topic label (small, uppercase, accent color)
+    label_font = _load_font(36, "sans-bold")
+    draw.text((80, 120), title.upper(), font=label_font, fill=palette["accent"])
+    # Accent line under label
+    draw.rectangle([(80, 180), (240, 185)], fill=palette["accent"])
+
+    # Center: headline (large, bold, wrapped, light color)
+    headline_font = _load_font(72, "sans-bold")
+    max_w = width - 160
+    lines = _wrap_text(headline, headline_font, draw, max_w)
+    line_h = 88
+    total_h = line_h * len(lines)
+    y_start = (height - total_h) // 2
+    for i, line in enumerate(lines):
+        draw.text((80, y_start + i * line_h), line, font=headline_font, fill=palette["light"])
+
+    # Below headline: accent divider
+    div_y = y_start + total_h + 40
+    draw.rectangle([(width // 2 - 80, div_y), (width // 2 + 80, div_y + 4)], fill=palette["accent"])
+
+    # Bottom: DM CTA (large, centered)
+    cta_font = _load_font(44, "sans-bold")
+    cta_text = "DM for website work"
+    cta_lw = _text_width(draw, cta_text, cta_font)
+    draw.text(((width - cta_lw) // 2, height - 280), cta_text, font=cta_font, fill=palette["light"])
+
+    # Footer: date + email
+    footer_font = _load_font(28, "mono-regular")
+    footer = f"{date.isoformat()}  ·  visualhookdesign@gmail.com"
+    fw = _text_width(draw, footer, footer_font)
+    draw.text(((width - fw) // 2, height - 200), footer, font=footer_font, fill=palette["accent"])
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    img.save(out_path, "PNG", optimize=True)
+    return "story_portrait"
+
+
+def _vertical_gradient_v2(img: Any, top_color: tuple, bottom_color: tuple) -> None:
+    """Paint a vertical gradient on a portrait image (in-place)."""
+    h = img.size[1]
+    pixels = img.load()
+    for y in range(h):
+        t = y / (h - 1)
+        r = int(top_color[0] + (bottom_color[0] - top_color[0]) * t)
+        g = int(top_color[1] + (bottom_color[1] - top_color[1]) * t)
+        b = int(top_color[2] + (bottom_color[2] - top_color[2]) * t)
+        for x in range(img.size[0]):
+            pixels[x, y] = (r, g, b)
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -1403,6 +1478,12 @@ def main() -> int:
     print(f"[INFO] Image written: {image_path} ({image_path.stat().st_size} bytes)")
     print(f"[INFO] Style: {style_name} (index {style_index})")
 
+    # Also render a PORTRAIT 1080x1920 Story image (Instagram Stories require 9:16)
+    story_filename = f"{date.isoformat()}-{slot}-story.png"
+    story_path = images_dir / story_filename
+    render_story_image(story_path, topic, image_headline, date, slot)
+    print(f"[INFO] Story image written: {story_path} ({story_path.stat().st_size} bytes)")
+
     manifest = {
         "id": content_id(date, slot),
         "date": date.isoformat(),
@@ -1416,6 +1497,7 @@ def main() -> int:
         "hashtags": hashtags,
         "image_file": f"content/images/{image_filename}",
         "image_filename": image_filename,
+        "story_image_filename": story_filename,
         "ai_generated": ai_generated,
         "generator": "groq" if ai_generated else "deterministic-fallback",
         "image_style": style_name,
