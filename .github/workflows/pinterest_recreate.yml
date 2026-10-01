@@ -1,0 +1,73 @@
+name: Pinterest Recreate All Pins (one-time)
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run: list pins that would be recreated, don't actually delete/create."
+        type: boolean
+        required: false
+        default: false
+      skip_groq:
+        description: "Only add link, skip regenerating titles/descriptions."
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pinterest-recreate
+  cancel-in-progress: false
+
+jobs:
+  recreate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      COMPOSIO_API_KEY: ${{ secrets.COMPOSIO_API_KEY }}
+      COMPOSIO_USER_ID: ${{ secrets.COMPOSIO_USER_ID }}
+      PINTEREST_CONNECTED_ACCOUNT_ID: ${{ secrets.PINTEREST_CONNECTED_ACCOUNT_ID }}
+      PINTEREST_USER_ID: ${{ secrets.PINTEREST_USER_ID }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Recreate all Pinterest pins
+        run: |
+          FLAGS=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            FLAGS="$FLAGS --dry-run"
+          fi
+          if [ "${{ github.event.inputs.skip_groq }}" = "true" ]; then
+            FLAGS="$FLAGS --skip-groq"
+          fi
+          python scripts/recreate_pinterest_pins.py \
+            --history content/history.json \
+            $FLAGS
+
+      - name: Commit updated history.json
+        if: always()
+        run: |
+          bash scripts/git_push_retry.sh "chore(pinterest): recreated all pins with portfolio link" "content/history.json" || true
