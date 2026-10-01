@@ -23,9 +23,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from publish_pinterest import (  # noqa: E402
     DEFAULT_BOARD_NAME,
+    PORTFOLIO_LINK,
     find_or_create_board,
     create_pin,
-    generate_pinterest_description_with_groq,
+    generate_pinterest_title_and_description,
+    build_fallback_title,
     build_fallback_description,
     load_pinterest_config,
     update_history_with_pinterest,
@@ -126,28 +128,32 @@ def main() -> int:
         print(f"  Headline: {image_headline}")
         print(f"  Image URL: {image_url}")
 
-        # Generate Pinterest description
-        pin_description = generate_pinterest_description_with_groq(topic, seed_fact, image_headline)
+        # Generate Pinterest-optimized title + description
+        pin_title, pin_description = generate_pinterest_title_and_description(topic, seed_fact, image_headline)
+        fake_manifest = {
+            "topic": topic,
+            "seed_fact": seed_fact,
+            "image_headline": image_headline,
+        }
+        if pin_title is None:
+            pin_title = build_fallback_title(fake_manifest)
+            print(f"  [INFO] Using fallback title: {pin_title[:60]}...")
         if pin_description is None:
-            # Build a minimal manifest-like dict for fallback
-            fake_manifest = {
-                "topic": topic,
-                "seed_fact": seed_fact,
-                "image_headline": image_headline,
-            }
             pin_description = build_fallback_description(fake_manifest)
+            print(f"  [INFO] Using fallback description ({len(pin_description)} chars).")
 
         try:
             pin_id = create_pin(
                 board_id=board_id,
                 image_url=image_url,
-                title=image_headline,
+                title=pin_title,
                 description=pin_description,
-                alt_text=image_headline,
-                link=None,
+                alt_text=pin_title,
+                link=PORTFOLIO_LINK,  # always link to portfolio
                 config=config,
             )
             print(f"  [OK] Pin published! Pin ID: {pin_id}")
+            print(f"       Link: {PORTFOLIO_LINK}")
             update_history_with_pinterest(history_path, content_id, pin_id, board_id)
             success += 1
             # Be polite to the API

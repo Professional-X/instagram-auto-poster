@@ -79,6 +79,10 @@ EMAIL_CTA = (
     "or DM on Instagram. Free consultation."
 )
 
+# Every pin links to the portfolio site — makes pins clickable and drives
+# traffic to the freelance web design landing page.
+PORTFOLIO_LINK = "https://professional-x.github.io/visualhk-designs/"
+
 REQUIRED_ENV = [
     "COMPOSIO_API_KEY",
     "COMPOSIO_USER_ID",
@@ -188,43 +192,51 @@ def create_pin(board_id: str, image_url: str, title: str, description: str,
 # Pinterest-optimized description via Groq
 # ---------------------------------------------------------------------------
 
-def generate_pinterest_description_with_groq(topic: str, seed_fact: str,
-                                              image_headline: str) -> str | None:
-    """Use Groq to generate a Pinterest-optimized (SEO-rich, longer) description.
+def generate_pinterest_title_and_description(topic: str, seed_fact: str,
+                                              image_headline: str) -> tuple[str | None, str | None]:
+    """Use Groq to generate a Pinterest-optimized title AND description.
 
-    Pinterest descriptions should be:
-    - 200-500 chars (longer than Instagram captions)
-    - Keyword-rich (people search Pinterest like Google)
-    - End with a clear CTA to email visualhookdesign@gmail.com or DM on Instagram
-    - No hashtags (Pinterest doesn't use them like Instagram)
+    Returns (title, description). Either may be None on failure; caller
+    should fall back to build_fallback_title / build_fallback_description.
+
+    Pinterest-optimized for growth:
+    - TITLE: matches what a small business owner would SEARCH for. Includes
+      keywords naturally. 50-100 chars. Click-worthy but not clickbait.
+    - DESCRIPTION: 300-500 chars, keyword-rich (Pinterest indexes full
+      description for search), ends with email CTA.
     """
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key or not api_key.strip():
-        return None
+        return None, None
     model = os.environ.get("GROQ_MODEL") or "openai/gpt-oss-120b"
 
     system_prompt = (
-        "You write Pinterest pin descriptions for a freelance web designer's account. "
-        "Pinterest is a SEARCH ENGINE — people search for solutions. Descriptions must be "
-        "keyword-rich, natural-sounding, and end with a clear CTA to email "
-        "visualhookdesign@gmail.com or DM on Instagram. No hashtags. No emojis. Plain text only."
+        "You write Pinterest pin titles and descriptions for a freelance web designer. "
+        "Pinterest is a SEARCH ENGINE — people search for solutions like 'how to make a website "
+        "for my business' or 'small business website tips'. Titles must match search queries. "
+        "Descriptions must be keyword-rich for Pinterest SEO. End descriptions with a clear CTA "
+        "to email visualhookdesign@gmail.com. No hashtags. No emojis. Plain text only."
     )
     user_prompt = f"""Topic: {topic}
 Tip/headline: {image_headline}
 Seed fact: {seed_fact}
 
-Write a Pinterest pin description that:
-1. Starts with a hook that a small business owner would search for
-2. Explains the tip in 2-3 plain-English sentences (no jargon)
-3. Includes 3-5 relevant keywords naturally woven in (e.g. "small business website",
-   "web design", "website redesign", "freelance web designer")
-4. Ends with: "Need a website for your business? Email visualhookdesign@gmail.com
-   or DM on Instagram for a free consultation."
-5. Total length: 200-500 characters
-6. NO hashtags, NO emojis, NO markdown
+Write a Pinterest pin title and description optimized for Pinterest search
+discovery. Think about what a small business owner would type into Pinterest
+search when looking for website help.
 
-Return STRICT JSON: {{"description": "<your description here>"}}
-No prose, no markdown, no explanation. Just the JSON object."""
+Return STRICT JSON with these keys (and no others):
+
+{{
+  "title": "A Pinterest-optimized title (50-100 chars). Must include searchable keywords like 'small business website', 'web design', 'website tips', 'website cost', etc. Match what someone would search. Example: 'Small Business Website Cost: What to Expect in 2026'. NO emojis, NO hashtags, NO all-caps shouting.",
+  "description": "A Pinterest-optimized description (300-500 chars). Start with a search-friendly hook. Explain the tip in 2-3 plain-English sentences with 3-5 relevant keywords woven in naturally (e.g. 'small business website', 'web design tips', 'website redesign', 'freelance web designer'). End with: 'Need a website for your business? Email visualhookdesign@gmail.com or DM on Instagram for a free consultation.' NO emojis, NO hashtags, NO markdown."
+}}
+
+Rules:
+- The title must be DIFFERENT from the image_headline (more search-optimized).
+- The description must NOT repeat the title.
+- Think: what would a small business owner search for? Use those exact words.
+- Pure JSON only. No prose before or after. No markdown fences."""
 
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -236,30 +248,30 @@ No prose, no markdown, no explanation. Just the JSON object."""
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
-        "max_tokens": 800,
+        "max_tokens": 1000,
         "temperature": 0.7,
     }
 
-    print(f"[INFO] Calling Groq for Pinterest-optimized description...")
+    print(f"[INFO] Calling Groq for Pinterest-optimized title + description...")
     try:
         resp = requests.post(
             "https://api.groq.com/openai/v1/chat/completions",
             headers=headers, json=body, timeout=45
         )
     except requests.RequestException as exc:
-        print(f"[WARN] Groq network error: {exc}. Using fallback description.")
-        return None
+        print(f"[WARN] Groq network error: {exc}. Using fallbacks.")
+        return None, None
 
     if resp.status_code != 200:
-        print(f"[WARN] Groq returned HTTP {resp.status_code}. Using fallback description.")
-        return None
+        print(f"[WARN] Groq returned HTTP {resp.status_code}. Using fallbacks.")
+        return None, None
 
     try:
         data = resp.json()
         content = data["choices"][0]["message"]["content"]
     except (ValueError, KeyError, IndexError) as exc:
-        print(f"[WARN] Groq response unparseable: {exc}. Using fallback.")
-        return None
+        print(f"[WARN] Groq response unparseable: {exc}. Using fallbacks.")
+        return None, None
 
     # Strip reasoning blocks + markdown fences
     content = content.strip()
@@ -278,16 +290,32 @@ No prose, no markdown, no explanation. Just the JSON object."""
     try:
         parsed = json.loads(content)
     except json.JSONDecodeError as exc:
-        print(f"[WARN] Groq returned non-JSON: {exc}. Using fallback.")
-        return None
+        print(f"[WARN] Groq returned non-JSON: {exc}. Using fallbacks.")
+        return None, None
 
+    title = parsed.get("title")
     desc = parsed.get("description")
+    if not isinstance(title, str) or len(title.strip()) < 10:
+        title = None
     if not isinstance(desc, str) or len(desc.strip()) < 50:
-        print("[WARN] Groq description malformed. Using fallback.")
-        return None
+        desc = None
 
-    print(f"[INFO] Pinterest description generated ({len(desc)} chars).")
-    return desc.strip()
+    if title:
+        print(f"[INFO] Pinterest title generated ({len(title)} chars): {title[:60]}...")
+    if desc:
+        print(f"[INFO] Pinterest description generated ({len(desc)} chars).")
+    return (title.strip() if title else None), (desc.strip() if desc else None)
+
+
+def build_fallback_title(manifest: dict[str, Any]) -> str:
+    """Fallback Pinterest title when Groq is unavailable.
+    Uses the image_headline but appends the topic for searchability.
+    """
+    headline = manifest.get("image_headline", "")
+    topic = manifest.get("topic", "Web Design Tip")
+    # Build a search-friendly title: "Topic: Headline" format
+    title = f"{topic}: {headline}"
+    return title[:100]
 
 
 def build_fallback_description(manifest: dict[str, Any]) -> str:
@@ -375,16 +403,24 @@ def main() -> int:
     print(f"[INFO] Headline: {image_headline}")
     print(f"[INFO] Topic: {topic}")
 
-    # Generate Pinterest description (Groq preferred, fallback to deterministic)
-    pin_description = generate_pinterest_description_with_groq(topic, seed_fact, image_headline)
+    # Generate Pinterest-optimized title + description (Groq preferred, fallback otherwise)
+    pin_title, pin_description = generate_pinterest_title_and_description(topic, seed_fact, image_headline)
+    if pin_title is None:
+        pin_title = build_fallback_title(manifest)
+        print(f"[INFO] Using fallback title: {pin_title[:60]}...")
     if pin_description is None:
         pin_description = build_fallback_description(manifest)
         print(f"[INFO] Using fallback description ({len(pin_description)} chars).")
 
+    # Always link to the portfolio site (makes pins clickable)
+    pin_link = args.link or PORTFOLIO_LINK
+    print(f"[INFO] Pin link: {pin_link}")
+
     if args.dry_run:
         print("[INFO] Dry-run mode: skipping Composio calls.")
         print(f"[INFO] Board name: {args.board_name}")
-        print(f"[INFO] Title: {image_headline[:100]}")
+        print(f"[INFO] Title: {pin_title[:100]}")
+        print(f"[INFO] Link: {pin_link}")
         print(f"[INFO] Description preview: {pin_description[:200]}...")
         return 0
 
@@ -397,15 +433,15 @@ def main() -> int:
         print(f"[ERROR] Board setup failed: {exc}", file=sys.stderr)
         return 1
 
-    # 2. Create the pin
+    # 2. Create the pin (with portfolio link)
     try:
         pin_id = create_pin(
             board_id=board_id,
             image_url=image_url,
-            title=image_headline,
+            title=pin_title,
             description=pin_description,
-            alt_text=image_headline,
-            link=args.link,
+            alt_text=pin_title,  # use the search-optimized title as alt text
+            link=pin_link,
             config=config,
         )
     except ComposioError as exc:
