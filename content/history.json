@@ -420,6 +420,25 @@
       "pinterest_published_at": "2026-10-01T13:30:44Z",
       "pinterest_pin_recreated_at": "2026-10-01T13:51:33Z",
       "pinterest_old_pin_id": "1021543128000263427"
+    },
+    {
+      "id": "2026-10-01-4",
+      "date": "2026-10-01",
+      "slot": 4,
+      "topic": "Why You Need A Website",
+      "fact_index": 8,
+      "seed_fact": "A website lets you show your full portfolio. Instagram captions cap you at 2,200 characters.",
+      "fresh_tip": false,
+      "image_style": "stats_callout",
+      "image_headline": "Showcase Your Full Portfolio Online",
+      "status": "published",
+      "media_id": "18077884466402775",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/3ed2db57faee0d4c74da187639caf16442a00ee9/content/images/2026-10-01-4.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-01T14:18:05Z",
+      "pinterest_pin_id": "1021543128000264618",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-01T14:18:10Z"
     }
   ]
 }
