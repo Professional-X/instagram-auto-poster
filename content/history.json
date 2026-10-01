@@ -340,6 +340,25 @@
       "pinterest_pin_id": "1021543128000232028",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-09-30T13:24:02Z"
+    },
+    {
+      "id": "2026-10-01-1",
+      "date": "2026-10-01",
+      "slot": 1,
+      "topic": "WordPress vs Wix vs Custom",
+      "fact_index": 5,
+      "seed_fact": "Ask your freelancer: 'Why this platform for my business?' A good one has a clear answer.",
+      "fresh_tip": false,
+      "image_style": "phone_mobile",
+      "image_headline": "Pick the Right Site Platform",
+      "status": "published",
+      "media_id": "18130326691687069",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/c26d6fd92746565fbaa60b9e47712c365c814832/content/images/2026-10-01-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-01T09:17:31Z",
+      "pinterest_pin_id": "1021543128000257923",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-01T09:17:35Z"
     }
   ]
 }
