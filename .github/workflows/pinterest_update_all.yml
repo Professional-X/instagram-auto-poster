@@ -1,0 +1,66 @@
+name: Pinterest Update All Pins (one-time)
+
+# One-time workflow: adds the portfolio link to ALL existing Pinterest pins
+# and regenerates SEO-optimized titles + descriptions via Groq.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry-run: list pins that would be updated, don't actually update."
+        type: boolean
+        required: false
+        default: false
+      skip_groq:
+        description: "Only add portfolio link, skip regenerating titles/descriptions."
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pinterest-update-all
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      COMPOSIO_API_KEY: ${{ secrets.COMPOSIO_API_KEY }}
+      COMPOSIO_USER_ID: ${{ secrets.COMPOSIO_USER_ID }}
+      PINTEREST_CONNECTED_ACCOUNT_ID: ${{ secrets.PINTEREST_CONNECTED_ACCOUNT_ID }}
+      PINTEREST_USER_ID: ${{ secrets.PINTEREST_USER_ID }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Update all Pinterest pins
+        run: |
+          FLAGS=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            FLAGS="$FLAGS --dry-run"
+          fi
+          if [ "${{ github.event.inputs.skip_groq }}" = "true" ]; then
+            FLAGS="$FLAGS --skip-groq"
+          fi
+          python scripts/update_pinterest_pins.py \
+            --history content/history.json \
+            $FLAGS
