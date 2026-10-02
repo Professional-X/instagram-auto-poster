@@ -477,6 +477,25 @@
       "pinterest_pin_id": "1021543128000295480",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-02T13:40:08Z"
+    },
+    {
+      "id": "2026-10-02-1",
+      "date": "2026-10-02",
+      "slot": 1,
+      "topic": "Website Mistakes Losing You Clients",
+      "fact_index": 0,
+      "seed_fact": "If your site takes more than 3 seconds to load, half your visitors leave before they see anything.",
+      "fresh_tip": false,
+      "image_style": "phone_mobile",
+      "image_headline": "Slow site? Losing customers.",
+      "status": "published",
+      "media_id": "18151696267546875",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/bf4a49c209886f89036a9bca9033ea4a54a0582b/content/images/2026-10-02-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-02T17:58:04Z",
+      "pinterest_pin_id": "1021543128000302461",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-02T17:58:09Z"
     }
   ]
 }
