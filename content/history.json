@@ -458,6 +458,25 @@
       "pinterest_pin_id": "1021543128000289814",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-02T08:50:28Z"
+    },
+    {
+      "id": "2026-10-02-3",
+      "date": "2026-10-02",
+      "slot": 3,
+      "topic": "Signs You Need A Redesign",
+      "fact_index": 2,
+      "seed_fact": "If your bounce rate is above 60%, your site is confusing visitors. Time for a redesign.",
+      "fresh_tip": false,
+      "image_style": "palette_typography",
+      "image_headline": "Visitors leaving too fast?",
+      "status": "published",
+      "media_id": "18130400032688822",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/806dfae28a33fdaacfe8f0cad86b29af2f88c176/content/images/2026-10-02-3.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-02T13:40:03Z",
+      "pinterest_pin_id": "1021543128000295480",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-02T13:40:08Z"
     }
   ]
 }
