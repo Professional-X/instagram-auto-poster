@@ -439,6 +439,25 @@
       "pinterest_pin_id": "1021543128000264618",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-01T14:18:10Z"
+    },
+    {
+      "id": "2026-10-02-2",
+      "date": "2026-10-02",
+      "slot": 2,
+      "topic": "What A Website Really Costs",
+      "fact_index": 1,
+      "seed_fact": "Domain = $12/year. Hosting = $60-$120/year. The website itself is the variable cost.",
+      "fresh_tip": false,
+      "image_style": "before_after",
+      "image_headline": "Your website cost, no surprises",
+      "status": "published",
+      "media_id": "17929849809165447",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/03786fe6f92e4f9d0da15b4a7960c5a57bda9efd/content/images/2026-10-02-2.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-02T08:50:24Z",
+      "pinterest_pin_id": "1021543128000289814",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-02T08:50:28Z"
     }
   ]
 }
