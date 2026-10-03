@@ -95,7 +95,19 @@
       "dm_sent": false,
       "lead_alert": false,
       "replied_at": "2026-09-29T12:35:25Z"
+    },
+    "18112143074129184": {
+      "post_id": "2026-10-03-4",
+      "media_id": "18048333620807636",
+      "comment_text": "Send me this post, I will repost",
+      "comment_user": "?",
+      "sentiment": "generic",
+      "sentiment_method": "groq",
+      "reply": "Appreciate you reaching out! Send us a DM and we'll talk about your site.",
+      "dm_sent": false,
+      "lead_alert": false,
+      "replied_at": "2026-10-03T19:09:06Z"
     }
   },
-  "last_run": "2026-10-03T15:06:18Z"
+  "last_run": "2026-10-03T19:09:07Z"
 }
