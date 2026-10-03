@@ -553,6 +553,25 @@
       "pinterest_pin_id": "1021543128000333640",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-03T16:34:48Z"
+    },
+    {
+      "id": "2026-10-03-1",
+      "date": "2026-10-03",
+      "slot": 1,
+      "topic": "How Long A Website Takes",
+      "fact_index": 5,
+      "seed_fact": "After launch: 1-2 weeks of tweaks is normal. Don't pay full price up front — milestone payments protect both sides.",
+      "fresh_tip": false,
+      "image_style": "component_grid",
+      "image_headline": "Website Ready? Expect a 2‑Week Fine‑Tune",
+      "status": "published",
+      "media_id": "17911694445495125",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/09d588f600603826655eac81face698da393d9ac/content/images/2026-10-03-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-03T18:31:43Z",
+      "pinterest_pin_id": "1021543128000337327",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-03T18:31:47Z"
     }
   ]
 }
