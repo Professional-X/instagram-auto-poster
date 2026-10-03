@@ -496,6 +496,25 @@
       "pinterest_pin_id": "1021543128000302461",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-02T17:58:09Z"
+    },
+    {
+      "id": "2026-10-03-2",
+      "date": "2026-10-03",
+      "slot": 2,
+      "topic": "Local SEO For Small Business",
+      "fact_index": 6,
+      "seed_fact": "Add a map embed on your contact page. Google sees it as a local signal.",
+      "fresh_tip": false,
+      "image_style": "browser_hero",
+      "image_headline": "Get Found Locally Faster",
+      "status": "published",
+      "media_id": "18117754456966750",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/91eb7071ae2d7ba309a5c44e2eb8b76afaf437ac/content/images/2026-10-03-2.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-03T08:27:28Z",
+      "pinterest_pin_id": "1021543128000321706",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-03T08:27:32Z"
     }
   ]
 }
