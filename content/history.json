@@ -515,6 +515,25 @@
       "pinterest_pin_id": "1021543128000321706",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-03T08:27:32Z"
+    },
+    {
+      "id": "2026-10-03-3",
+      "date": "2026-10-03",
+      "slot": 3,
+      "topic": "Why You Need A Website",
+      "fact_index": 7,
+      "seed_fact": "Websites work without algorithms deciding who sees your content. Your homepage always reaches 100%.",
+      "fresh_tip": false,
+      "image_style": "phone_mobile",
+      "image_headline": "Your site reaches 100% of visitors",
+      "status": "published",
+      "media_id": "18101698073031723",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/b8c3107d5e864aa7ec938793d7c88f1202e043d0/content/images/2026-10-03-3.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-03T12:18:09Z",
+      "pinterest_pin_id": "1021543128000325723",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-03T12:18:13Z"
     }
   ]
 }
