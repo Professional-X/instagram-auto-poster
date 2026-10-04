@@ -591,6 +591,25 @@
       "pinterest_pin_id": "1021543128000354957",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-04T08:40:25Z"
+    },
+    {
+      "id": "2026-10-04-3",
+      "date": "2026-10-04",
+      "slot": 3,
+      "topic": "WordPress vs Wix vs Custom",
+      "fact_index": 6,
+      "seed_fact": "WordPress plugins are both its superpower and Achilles heel. More plugins = more conflicts.",
+      "fresh_tip": false,
+      "image_style": "stats_callout",
+      "image_headline": "Too many plugins slowing you down",
+      "status": "published",
+      "media_id": "18079193759422795",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/aa5d17fe0f488aaf2518b196eda2b12bef3ec6a0/content/images/2026-10-04-3.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-04T13:05:02Z",
+      "pinterest_pin_id": "1021543128000360003",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-04T13:05:10Z"
     }
   ]
 }
