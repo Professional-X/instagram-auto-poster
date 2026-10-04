@@ -572,6 +572,25 @@
       "pinterest_pin_id": "1021543128000337327",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-03T18:31:47Z"
+    },
+    {
+      "id": "2026-10-04-2",
+      "date": "2026-10-04",
+      "slot": 2,
+      "topic": "Signs You Need A Redesign",
+      "fact_index": 4,
+      "seed_fact": "Your competitors' websites look better than yours? Customers notice. They pick them, not you.",
+      "fresh_tip": false,
+      "image_style": "palette_typography",
+      "image_headline": "Your competitors' websites look better than yours?...",
+      "status": "published",
+      "media_id": "17921853846220859",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/470eee963bbdcf425b7c73eb0fd978094843bf5a/content/images/2026-10-04-2.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-04T08:40:19Z",
+      "pinterest_pin_id": "1021543128000354957",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-04T08:40:25Z"
     }
   ]
 }
