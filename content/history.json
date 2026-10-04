@@ -610,6 +610,25 @@
       "pinterest_pin_id": "1021543128000360003",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-04T13:05:10Z"
+    },
+    {
+      "id": "2026-10-04-4",
+      "date": "2026-10-04",
+      "slot": 4,
+      "topic": "How Long A Website Takes",
+      "fact_index": 7,
+      "seed_fact": "Custom functionality (bookings, portals) adds 2-4 weeks depending on complexity.",
+      "fresh_tip": false,
+      "image_style": "component_grid",
+      "image_headline": "Custom features extend launch time",
+      "status": "published",
+      "media_id": "18085857641294339",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/af988c0e041e914fc780467119c91b37a82820c8/content/images/2026-10-04-4.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-04T16:55:52Z",
+      "pinterest_pin_id": "1021543128000366914",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-04T16:55:57Z"
     }
   ]
 }
