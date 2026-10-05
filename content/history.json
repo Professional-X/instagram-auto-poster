@@ -667,6 +667,25 @@
       "pinterest_pin_id": "1021543128000388496",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-05T09:29:47Z"
+    },
+    {
+      "id": "2026-10-05-4",
+      "date": "2026-10-05",
+      "slot": 4,
+      "topic": "What A Website Really Costs",
+      "fact_index": 23,
+      "seed_fact": "Hosting that 'includes' a free website usually means a generic template. Real design costs real money.",
+      "fresh_tip": false,
+      "image_style": "before_after",
+      "image_headline": "Your site is more than a free template",
+      "status": "published",
+      "media_id": "18107419364244383",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/2d63e80162f9a7cdaee96182e546b145052e27bf/content/images/2026-10-05-4.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-05T15:39:02Z",
+      "pinterest_pin_id": "1021543128000396256",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-05T15:39:06Z"
     }
   ]
 }
