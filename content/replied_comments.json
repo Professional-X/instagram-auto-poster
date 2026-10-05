@@ -179,7 +179,19 @@
       "dm_sent": false,
       "lead_alert": false,
       "replied_at": "2026-10-04T22:57:38Z"
+    },
+    "18066670181786873": {
+      "post_id": "2026-10-03-4",
+      "media_id": "18048333620807636",
+      "comment_text": "Appreciate you reaching out! Send us a DM and we'll talk about your site.",
+      "comment_user": "visualhookdesign",
+      "sentiment": "generic",
+      "sentiment_method": "groq",
+      "reply": "Thanks for the comment! DM us to discuss your website project.",
+      "dm_sent": false,
+      "lead_alert": false,
+      "replied_at": "2026-10-05T01:49:50Z"
     }
   },
-  "last_run": "2026-10-04T22:57:41Z"
+  "last_run": "2026-10-05T01:49:54Z"
 }
