@@ -705,6 +705,25 @@
       "pinterest_pin_id": "1021543128000415663",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-06T09:14:20Z"
+    },
+    {
+      "id": "2026-10-06-3",
+      "date": "2026-10-06",
+      "slot": 3,
+      "topic": "How Long A Website Takes",
+      "fact_index": 21,
+      "seed_fact": "Accessibility audits add 2-4 days. Worth it — 15% of your customers depend on it.",
+      "fresh_tip": false,
+      "image_style": "component_grid",
+      "image_headline": "Accessibility audits add 2-4 days. Worth it...",
+      "status": "published",
+      "media_id": "18107966216248336",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/5a781601581f3bf3468136aacda2005b11ef36aa/content/images/2026-10-06-3.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-06T14:00:42Z",
+      "pinterest_pin_id": "1021543128000421543",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-06T14:00:51Z"
     }
   ]
 }
