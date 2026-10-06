@@ -686,6 +686,25 @@
       "pinterest_pin_id": "1021543128000396256",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-05T15:39:06Z"
+    },
+    {
+      "id": "2026-10-06-1",
+      "date": "2026-10-06",
+      "slot": 1,
+      "topic": "Signs You Need A Redesign",
+      "fact_index": 19,
+      "seed_fact": "Site was built on a defunct platform (Wix Editor X, old Weebly)? Migrate before it shuts down.",
+      "fresh_tip": false,
+      "image_style": "palette_typography",
+      "image_headline": "Your site’s platform is dying",
+      "status": "published",
+      "media_id": "18190425607407654",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/f03f3b174cc9e985881f7fcfeb77edd0f891db1e/content/images/2026-10-06-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-06T09:14:16Z",
+      "pinterest_pin_id": "1021543128000415663",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-06T09:14:20Z"
     }
   ]
 }
