@@ -202,7 +202,19 @@
       "dm_sent": false,
       "error": "Composio action INSTAGRAM_REPLY_TO_COMMENT was unsuccessful: Failed to reply to comment (status 500). Response: {\"error\":{\"message\":\"An unknown error has occurred.\",\"type\":\"OAuthException\",\"code\":1,\"f",
       "replied_at": "2026-10-05T08:46:54Z"
+    },
+    "18241374064319444": {
+      "post_id": "2026-10-07-1",
+      "media_id": "18100015454644088",
+      "comment_text": "SeNd Me THis pOST",
+      "comment_user": "?",
+      "sentiment": "generic",
+      "sentiment_method": "groq",
+      "reply": "Thanks! Want a website like this for your business? DM us to chat.",
+      "dm_sent": false,
+      "lead_alert": false,
+      "replied_at": "2026-10-07T15:26:11Z"
     }
   },
-  "last_run": "2026-10-07T07:03:59Z"
+  "last_run": "2026-10-07T15:26:11Z"
 }
