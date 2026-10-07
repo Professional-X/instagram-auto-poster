@@ -214,7 +214,19 @@
       "dm_sent": false,
       "lead_alert": false,
       "replied_at": "2026-10-07T15:26:11Z"
+    },
+    "18491802835099962": {
+      "post_id": "2026-10-07-1",
+      "media_id": "18100015454644088",
+      "comment_text": "Thanks! Want a website like this for your business? DM us to chat.",
+      "comment_user": "visualhookdesign",
+      "sentiment": "generic",
+      "sentiment_method": "groq",
+      "reply": "Thanks! Want a website like this for your business? DM us to chat.",
+      "dm_sent": false,
+      "lead_alert": false,
+      "replied_at": "2026-10-07T21:10:02Z"
     }
   },
-  "last_run": "2026-10-07T15:26:11Z"
+  "last_run": "2026-10-07T21:10:02Z"
 }
