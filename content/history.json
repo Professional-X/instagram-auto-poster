@@ -724,6 +724,25 @@
       "pinterest_pin_id": "1021543128000421543",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-06T14:00:51Z"
+    },
+    {
+      "id": "2026-10-07-1",
+      "date": "2026-10-07",
+      "slot": 1,
+      "topic": "Why You Need A Website",
+      "fact_index": 18,
+      "seed_fact": "Local SEO puts your business in Google Maps results. No website = not in the map pack.",
+      "fresh_tip": false,
+      "image_style": "before_after",
+      "image_headline": "Your business missing from Google Maps",
+      "status": "published",
+      "media_id": "18100015454644088",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/cd4ac17e81b0e3557d7e62b052de3442b24b6814/content/images/2026-10-07-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-07T09:05:04Z",
+      "pinterest_pin_id": "1021543128000445450",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-07T09:05:08Z"
     }
   ]
 }
