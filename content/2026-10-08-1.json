@@ -1,0 +1,27 @@
+{
+  "id": "2026-10-08-1",
+  "date": "2026-10-08",
+  "slot": 1,
+  "topic": "WordPress vs Wix vs Custom",
+  "fact_index": 7,
+  "seed_fact": "Wix's 'free' plan shows ads on your site and locks your domain. Upgrade or leave.",
+  "fresh_tip": false,
+  "image_headline": "Your site shouldn’t show ads",
+  "caption": "Seeing ads on your own business site? If you’re on Wix’s free plan, ads appear on every page and you can’t use your own domain, which looks unprofessional. Upgrading removes them, but a custom-built site gives you full control and a clean brand. DM me to discuss a site that works for your business\n\n#webdesign #smallbusiness #freelancewebdesigner #websiteaudit #customwebsite",
+  "hashtags": [
+    "#webdesign",
+    "#smallbusiness",
+    "#freelancewebdesigner",
+    "#websiteaudit",
+    "#customwebsite"
+  ],
+  "image_file": "content/images/2026-10-08-1.png",
+  "image_filename": "2026-10-08-1.png",
+  "story_image_filename": "2026-10-08-1-story.png",
+  "ai_generated": true,
+  "generator": "groq",
+  "image_style": "browser_hero",
+  "style_index": 0,
+  "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/12d69ad42b3d99eab0db957d7c27ecf7c7fb29ff/content/images/2026-10-08-1.png",
+  "story_image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/12d69ad42b3d99eab0db957d7c27ecf7c7fb29ff/content/images/2026-10-08-1-story.png"
+}
