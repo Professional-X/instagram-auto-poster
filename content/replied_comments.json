@@ -262,7 +262,18 @@
       "dm_sent": false,
       "lead_alert": false,
       "replied_at": "2026-10-08T16:19:09Z"
+    },
+    "18059562143551555": {
+      "post_id": "2026-10-07-1",
+      "media_id": "18100015454644088",
+      "comment_text": "Thanks for the comment! DM us to discuss your website project.",
+      "comment_user": "visualhookdesign",
+      "sentiment": "generic",
+      "reply": "Thanks for the comment! DM us to discuss your website project.",
+      "dm_sent": false,
+      "error": "Composio action INSTAGRAM_REPLY_TO_COMMENT was unsuccessful: Failed to reply to comment (status 500). Response: {\"error\":{\"message\":\"An unknown error has occurred.\",\"type\":\"OAuthException\",\"code\":1,\"f",
+      "replied_at": "2026-10-08T21:56:57Z"
     }
   },
-  "last_run": "2026-10-08T16:19:10Z"
+  "last_run": "2026-10-08T21:56:58Z"
 }
