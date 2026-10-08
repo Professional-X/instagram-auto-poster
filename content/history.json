@@ -781,6 +781,25 @@
       "pinterest_pin_id": "1021543128000475169",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-08T09:20:11Z"
+    },
+    {
+      "id": "2026-10-08-4",
+      "date": "2026-10-08",
+      "slot": 4,
+      "topic": "Why You Need A Website",
+      "fact_index": 10,
+      "seed_fact": "Customers who find you via Google search convert 3x higher than social media followers.",
+      "fresh_tip": false,
+      "image_style": "palette_typography",
+      "image_headline": "Google searches bring 3x more buyers",
+      "status": "published",
+      "media_id": "18093061121662622",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/8fff8edaaa259d34abd1578f4ce926cd4284035a/content/images/2026-10-08-4.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-08T14:26:06Z",
+      "pinterest_pin_id": "1021543128000482411",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-08T14:26:10Z"
     }
   ]
 }
