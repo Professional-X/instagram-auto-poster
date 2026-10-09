@@ -800,6 +800,25 @@
       "pinterest_pin_id": "1021543128000482411",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-08T14:26:10Z"
+    },
+    {
+      "id": "2026-10-09-1",
+      "date": "2026-10-09",
+      "slot": 1,
+      "topic": "Website Mistakes Losing You Clients",
+      "fact_index": 9,
+      "seed_fact": "No SSL certificate (https)? Browsers flag your site as 'Not Secure' and visitors bail.",
+      "fresh_tip": false,
+      "image_style": "component_grid",
+      "image_headline": "Your Site Says ‘Not Secure’",
+      "status": "published",
+      "media_id": "18629326252058062",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/ec65279c24a844ddea74bfc1bf2e1b686e77668a/content/images/2026-10-09-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-09T09:28:04Z",
+      "pinterest_pin_id": "1021543128000506680",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-09T09:28:09Z"
     }
   ]
 }

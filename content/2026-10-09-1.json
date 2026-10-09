@@ -1,0 +1,27 @@
+{
+  "id": "2026-10-09-1",
+  "date": "2026-10-09",
+  "slot": 1,
+  "topic": "Website Mistakes Losing You Clients",
+  "fact_index": 9,
+  "seed_fact": "No SSL certificate (https)? Browsers flag your site as 'Not Secure' and visitors bail.",
+  "fresh_tip": false,
+  "image_headline": "Your Site Says ‘Not Secure’",
+  "caption": "Seeing a ‘Not Secure’ warning? That’s a red flag for shoppers. Without an SSL certificate browsers label your site as unsafe, and most visitors leave before you can even pitch your product. DM me for a quick security check and turn browsers into buyers.\n\n#webdesign #smallbusiness #freelancewebdesigner #websiteredesign #seo",
+  "hashtags": [
+    "#webdesign",
+    "#smallbusiness",
+    "#freelancewebdesigner",
+    "#websiteredesign",
+    "#seo"
+  ],
+  "image_file": "content/images/2026-10-09-1.png",
+  "image_filename": "2026-10-09-1.png",
+  "story_image_filename": "2026-10-09-1-story.png",
+  "ai_generated": true,
+  "generator": "groq",
+  "image_style": "component_grid",
+  "style_index": 5,
+  "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/ec65279c24a844ddea74bfc1bf2e1b686e77668a/content/images/2026-10-09-1.png",
+  "story_image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/ec65279c24a844ddea74bfc1bf2e1b686e77668a/content/images/2026-10-09-1-story.png"
+}
