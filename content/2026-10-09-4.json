@@ -1,0 +1,27 @@
+{
+  "id": "2026-10-09-4",
+  "date": "2026-10-09",
+  "slot": 4,
+  "topic": "WordPress vs Wix vs Custom",
+  "fact_index": 11,
+  "seed_fact": "Webflow has a learning curve but lets you build custom layouts without code. Worth it for designers.",
+  "fresh_tip": false,
+  "image_headline": "Custom website, no coding hassle",
+  "caption": "Stuck choosing between WordPress, Wix, or a custom site? WordPress is flexible but can get messy, Wix is simple but restrictive, while a custom build (e.g., Webflow) gives a unique look without you learning code. DM me to find the right fit for your business.\n\n#webdesign #smallbusiness #freelancewebdesigner #websiteaudit #customwebsite",
+  "hashtags": [
+    "#webdesign",
+    "#smallbusiness",
+    "#freelancewebdesigner",
+    "#websiteaudit",
+    "#customwebsite"
+  ],
+  "image_file": "content/images/2026-10-09-4.png",
+  "image_filename": "2026-10-09-4.png",
+  "story_image_filename": "2026-10-09-4-story.png",
+  "ai_generated": true,
+  "generator": "groq",
+  "image_style": "before_after",
+  "style_index": 2,
+  "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/109c46889ca1e8ab47a2ec2a05dec7f6ed45be83/content/images/2026-10-09-4.png",
+  "story_image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/109c46889ca1e8ab47a2ec2a05dec7f6ed45be83/content/images/2026-10-09-4-story.png"
+}
