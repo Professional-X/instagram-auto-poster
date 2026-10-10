@@ -857,6 +857,25 @@
       "pinterest_pin_id": "1021543128000537561",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-10T08:49:08Z"
+    },
+    {
+      "id": "2026-10-10-3",
+      "date": "2026-10-10",
+      "slot": 3,
+      "topic": "Why You Need A Website",
+      "fact_index": 11,
+      "seed_fact": "A website is a one-time investment that compounds. Social media ads stop the second you stop paying.",
+      "fresh_tip": false,
+      "image_style": "phone_mobile",
+      "image_headline": "Your website works 24/7",
+      "status": "published",
+      "media_id": "18128552197866784",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/138b95f9885d9bb92767eb8b7c2d88a6916060af/content/images/2026-10-10-3.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-10T13:21:38Z",
+      "pinterest_pin_id": "1021543128000543090",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-10T13:21:41Z"
     }
   ]
 }
