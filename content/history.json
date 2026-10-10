@@ -876,6 +876,25 @@
       "pinterest_pin_id": "1021543128000543090",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-10T13:21:41Z"
+    },
+    {
+      "id": "2026-10-10-1",
+      "date": "2026-10-10",
+      "slot": 1,
+      "topic": "How Long A Website Takes",
+      "fact_index": 9,
+      "seed_fact": "Logo design alongside the website adds 1 week. Done separately, add 2 weeks.",
+      "fresh_tip": false,
+      "image_style": "component_grid",
+      "image_headline": "Cut weeks off your site launch",
+      "status": "published",
+      "media_id": "18093809255430182",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/f4df54a276110c6f1522eec60aee37efbd508189/content/images/2026-10-10-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-10T17:25:26Z",
+      "pinterest_pin_id": "1021543128000549948",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-10T17:25:31Z"
     }
   ]
 }
