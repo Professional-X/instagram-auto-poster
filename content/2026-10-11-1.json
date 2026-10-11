@@ -3,25 +3,25 @@
   "date": "2026-10-11",
   "slot": 1,
   "topic": "What A Website Really Costs",
-  "fact_index": 19,
-  "seed_fact": "A $2000 website with proper SEO brings 10x the leads of a $500 template site. Do the math.",
+  "fact_index": 21,
+  "seed_fact": "Wix/Shopify monthly fees ($20-$200/mo) add up. A self-hosted site is cheaper after year 2.",
   "fresh_tip": false,
-  "image_headline": "A $2000 website with proper SEO brings...",
-  "caption": "What A Website Really Costs\n\nA $2000 website with proper SEO brings 10x the leads of a $500 template site. Do the math.\n\nNeed a website that actually brings you clients? DM me — let's talk about your project.\n\n#freelancewebdesigner #websitescost #webdesignbudget #transparentpricing #webdesignquote",
+  "image_headline": "Stop Overpaying for Your Site",
+  "caption": "Think a $20/month site saves you money? Those platform fees add up—by year two you could be paying $240‑$2,400 extra. A custom, self‑hosted website costs more upfront but starts saving you cash fast. DM me to see how a tailored site can cut costs.\n\n#webdesign #smallbusiness #freelancewebdesigner #websiteredesign #entrepreneur",
   "hashtags": [
+    "#webdesign",
+    "#smallbusiness",
     "#freelancewebdesigner",
-    "#websitescost",
-    "#webdesignbudget",
-    "#transparentpricing",
-    "#webdesignquote"
+    "#websiteredesign",
+    "#entrepreneur"
   ],
   "image_file": "content/images/2026-10-11-1.png",
   "image_filename": "2026-10-11-1.png",
   "story_image_filename": "2026-10-11-1-story.png",
-  "ai_generated": false,
-  "generator": "deterministic-fallback",
+  "ai_generated": true,
+  "generator": "groq",
   "image_style": "before_after",
   "style_index": 2,
-  "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/97db823f1210f2ced350d49a0bc725ed8be3df66/content/images/2026-10-11-1.png",
-  "story_image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/97db823f1210f2ced350d49a0bc725ed8be3df66/content/images/2026-10-11-1-story.png"
+  "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/30cb1559dcabad75418c1a341f027acacda64840/content/images/2026-10-11-1.png",
+  "story_image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/30cb1559dcabad75418c1a341f027acacda64840/content/images/2026-10-11-1-story.png"
 }
