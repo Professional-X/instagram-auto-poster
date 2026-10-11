@@ -914,6 +914,25 @@
       "pinterest_pin_id": "1021543128000572027",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-11T09:10:53Z"
+    },
+    {
+      "id": "2026-10-11-3",
+      "date": "2026-10-11",
+      "slot": 3,
+      "topic": "WordPress vs Wix vs Custom",
+      "fact_index": 20,
+      "seed_fact": "Custom static sites (HTML/CSS) are blazing fast but require code for any content update.",
+      "fresh_tip": false,
+      "image_style": "stats_callout",
+      "image_headline": "Speed vs. Flexibility: Choose Wisely",
+      "status": "published",
+      "media_id": "18125085277924600",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/b5eed05f6d782262f10c28f146c2bc7b9465ef58/content/images/2026-10-11-3.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-11T13:50:51Z",
+      "pinterest_pin_id": "1021543128000578033",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-11T13:50:56Z"
     }
   ]
 }
