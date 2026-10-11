@@ -895,6 +895,25 @@
       "pinterest_pin_id": "1021543128000549948",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-10T17:25:31Z"
+    },
+    {
+      "id": "2026-10-11-1",
+      "date": "2026-10-11",
+      "slot": 1,
+      "topic": "What A Website Really Costs",
+      "fact_index": 19,
+      "seed_fact": "A $2000 website with proper SEO brings 10x the leads of a $500 template site. Do the math.",
+      "fresh_tip": false,
+      "image_style": "before_after",
+      "image_headline": "A $2000 website with proper SEO brings...",
+      "status": "published",
+      "media_id": "18115072586110345",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/97db823f1210f2ced350d49a0bc725ed8be3df66/content/images/2026-10-11-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-11T09:10:49Z",
+      "pinterest_pin_id": "1021543128000572027",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-11T09:10:53Z"
     }
   ]
 }
