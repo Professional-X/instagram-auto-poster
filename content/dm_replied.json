@@ -71,7 +71,13 @@
       "messages_count": 1,
       "last_message": "Hello! We checked out your page and honestly your branding/content looks solid 👌",
       "replied_at": "2026-09-27T03:03:38Z"
+    },
+    "aWdfZAG06MzQwMjgyMzY2ODQxNzEwMzAxMjQ0MjYwMzY5NTk4NzI4MjA5MDE5": {
+      "status": "no_recipient_id",
+      "messages_count": 6,
+      "last_message": "K",
+      "replied_at": "2026-10-12T20:47:09Z"
     }
   },
-  "last_run": "2026-10-12T11:35:45Z"
+  "last_run": "2026-10-12T20:47:09Z"
 }
