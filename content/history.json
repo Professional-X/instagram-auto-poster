@@ -933,6 +933,25 @@
       "pinterest_pin_id": "1021543128000578033",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-11T13:50:56Z"
+    },
+    {
+      "id": "2026-10-12-1",
+      "date": "2026-10-12",
+      "slot": 1,
+      "topic": "Local SEO For Small Business",
+      "fact_index": 15,
+      "seed_fact": "Embed a Google Map on your contact page. Reinforces your location to Google.",
+      "fresh_tip": false,
+      "image_style": "component_grid",
+      "image_headline": "Embed a Google Map on your contact...",
+      "status": "published",
+      "media_id": "18136007248650026",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/f786f7d0dd5bbca98ffc801df334a9ef9e5955ed/content/images/2026-10-12-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-12T09:35:49Z",
+      "pinterest_pin_id": "1021543128000604542",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-12T09:35:51Z"
     }
   ]
 }
