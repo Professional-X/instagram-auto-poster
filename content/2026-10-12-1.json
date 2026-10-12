@@ -3,25 +3,25 @@
   "date": "2026-10-12",
   "slot": 1,
   "topic": "Local SEO For Small Business",
-  "fact_index": 15,
-  "seed_fact": "Embed a Google Map on your contact page. Reinforces your location to Google.",
+  "fact_index": 16,
+  "seed_fact": "Ask customers for reviews in person right after service. Conversion rate is 5x higher than email asks.",
   "fresh_tip": false,
-  "image_headline": "Embed a Google Map on your contact...",
-  "caption": "Local SEO For Small Business\n\nEmbed a Google Map on your contact page. Reinforces your location to Google.\n\nNeed a website that actually brings you clients? DM me — let's talk about your project.\n\n#smallbusinessmarketing #seo #googlebusinessprofile #localmarketing #smallbusinessseo",
+  "image_headline": "Turn Happy Customers into Reviews",
+  "caption": "Want more locals finding your business online? Ask for a quick review right after you finish a service—people are 5× more likely to say yes in person than via email. Those fresh reviews lift your local SEO fast. DM me to make your site review‑ready and attract more customers.\n\n#webdesign #smallbusiness #localseo #freelancewebdesigner #reviews",
   "hashtags": [
-    "#smallbusinessmarketing",
-    "#seo",
-    "#googlebusinessprofile",
-    "#localmarketing",
-    "#smallbusinessseo"
+    "#webdesign",
+    "#smallbusiness",
+    "#localseo",
+    "#freelancewebdesigner",
+    "#reviews"
   ],
   "image_file": "content/images/2026-10-12-1.png",
   "image_filename": "2026-10-12-1.png",
   "story_image_filename": "2026-10-12-1-story.png",
-  "ai_generated": false,
-  "generator": "deterministic-fallback",
+  "ai_generated": true,
+  "generator": "groq",
   "image_style": "component_grid",
   "style_index": 5,
-  "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/f786f7d0dd5bbca98ffc801df334a9ef9e5955ed/content/images/2026-10-12-1.png",
-  "story_image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/f786f7d0dd5bbca98ffc801df334a9ef9e5955ed/content/images/2026-10-12-1-story.png"
+  "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/20870a1526b3282937c920d35198b01927198090/content/images/2026-10-12-1.png",
+  "story_image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/20870a1526b3282937c920d35198b01927198090/content/images/2026-10-12-1-story.png"
 }
