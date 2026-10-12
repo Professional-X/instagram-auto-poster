@@ -952,6 +952,25 @@
       "pinterest_pin_id": "1021543128000604542",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-12T09:35:51Z"
+    },
+    {
+      "id": "2026-10-12-4",
+      "date": "2026-10-12",
+      "slot": 4,
+      "topic": "What A Website Really Costs",
+      "fact_index": 21,
+      "seed_fact": "Wix/Shopify monthly fees ($20-$200/mo) add up. A self-hosted site is cheaper after year 2.",
+      "fresh_tip": false,
+      "image_style": "before_after",
+      "image_headline": "Wix/Shopify monthly fees ($20-$200/mo) add up. A...",
+      "status": "published",
+      "media_id": "17871300774647262",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/4bfbd9980d632298306313159164c6f87fbed6cb/content/images/2026-10-12-4.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-12T16:34:06Z",
+      "pinterest_pin_id": "1021543128000613908",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-12T16:34:08Z"
     }
   ]
 }
