@@ -990,6 +990,25 @@
       "pinterest_pin_id": "1021543128000635657",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-13T09:39:50Z"
+    },
+    {
+      "id": "2026-10-13-4",
+      "date": "2026-10-13",
+      "slot": 4,
+      "topic": "Local SEO For Small Business",
+      "fact_index": 5,
+      "seed_fact": "NAP consistency matters: your Name, Address, Phone must match exactly everywhere online.",
+      "fresh_tip": false,
+      "image_style": "palette_typography",
+      "image_headline": "NAP consistency matters: your Name, Address, Phone...",
+      "status": "published",
+      "media_id": "18174822175443963",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/c57a4dddd8e89d95e2a24882e5035d8541809291/content/images/2026-10-13-4.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-13T14:51:58Z",
+      "pinterest_pin_id": "1021543128000641624",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-13T14:52:02Z"
     }
   ]
 }
