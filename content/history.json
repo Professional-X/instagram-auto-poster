@@ -1009,6 +1009,25 @@
       "pinterest_pin_id": "1021543128000641624",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-13T14:52:02Z"
+    },
+    {
+      "id": "2026-10-14-2",
+      "date": "2026-10-14",
+      "slot": 2,
+      "topic": "Website Mistakes Losing You Clients",
+      "fact_index": 1,
+      "seed_fact": "No clear call-to-action? Visitors leave. Tell them exactly what to do: Call, Book, Buy, DM.",
+      "fresh_tip": false,
+      "image_style": "browser_hero",
+      "image_headline": "No clear call-to-action? Visitors leave. Tell them...",
+      "status": "published",
+      "media_id": "18117323878820774",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/3ba6ecd5528550c36ff1c238795b9f2ae1bfda57/content/images/2026-10-14-2.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-14T07:54:46Z",
+      "pinterest_pin_id": "1021543128000663861",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-14T07:54:51Z"
     }
   ]
 }
