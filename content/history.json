@@ -1047,6 +1047,25 @@
       "pinterest_pin_id": "1021543128000668462",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-14T12:42:58Z"
+    },
+    {
+      "id": "2026-10-14-1",
+      "date": "2026-10-14",
+      "slot": 1,
+      "topic": "Why You Need A Website",
+      "fact_index": 0,
+      "seed_fact": "70% of consumers research a business online before visiting or contacting them. No website = invisible.",
+      "fresh_tip": false,
+      "image_style": "component_grid",
+      "image_headline": "Invisible online? Get found.",
+      "status": "published",
+      "media_id": "18356858215223952",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/443722d3c073ec03f461271dd0b337ad26fba147/content/images/2026-10-14-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-14T17:25:52Z",
+      "pinterest_pin_id": "1021543128000675764",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-14T17:25:56Z"
     }
   ]
 }
