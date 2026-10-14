@@ -1028,6 +1028,25 @@
       "pinterest_pin_id": "1021543128000663861",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-14T07:54:51Z"
+    },
+    {
+      "id": "2026-10-14-3",
+      "date": "2026-10-14",
+      "slot": 3,
+      "topic": "What A Website Really Costs",
+      "fact_index": 2,
+      "seed_fact": "Cheap template sites look cheap. Custom design from a freelancer costs more but converts better.",
+      "fresh_tip": false,
+      "image_style": "phone_mobile",
+      "image_headline": "Stop Losing Sales to Cheap Sites",
+      "status": "published",
+      "media_id": "18115082420043090",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/4670c641298548147f48d534787663976819d84b/content/images/2026-10-14-3.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-14T12:42:57Z",
+      "pinterest_pin_id": "1021543128000668462",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-14T12:42:58Z"
     }
   ]
 }
