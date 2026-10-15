@@ -1085,6 +1085,25 @@
       "pinterest_pin_id": "1021543128000694766",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-15T07:39:46Z"
+    },
+    {
+      "id": "2026-10-15-3",
+      "date": "2026-10-15",
+      "slot": 3,
+      "topic": "Local SEO For Small Business",
+      "fact_index": 24,
+      "seed_fact": "Local SEO shows results in 2-3 months, not 2-3 years. Faster than national SEO.",
+      "fresh_tip": false,
+      "image_style": "stats_callout",
+      "image_headline": "Get Local Customers in Months",
+      "status": "published",
+      "media_id": "17907699021572047",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/e3ce5f4be71369ed1816cb956dd76d5b2bdcfe1a/content/images/2026-10-15-3.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-15T12:31:06Z",
+      "pinterest_pin_id": "1021543128000699919",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-15T12:31:11Z"
     }
   ]
 }
