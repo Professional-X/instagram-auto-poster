@@ -1104,6 +1104,25 @@
       "pinterest_pin_id": "1021543128000699919",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-15T12:31:11Z"
+    },
+    {
+      "id": "2026-10-15-1",
+      "date": "2026-10-15",
+      "slot": 1,
+      "topic": "WordPress vs Wix vs Custom",
+      "fact_index": 23,
+      "seed_fact": "Don't switch platforms mid-business-launch. Migrate during a slow month to minimize disruption.",
+      "fresh_tip": false,
+      "image_style": "before_after",
+      "image_headline": "Plan Your Site Switch Wisely",
+      "status": "published",
+      "media_id": "18215266318360970",
+      "image_url": "https://raw.githubusercontent.com/aura-fyll/instagram-auto-poster/d9a04bf9619a4236c6e4d29b835fca180dcdc492/content/images/2026-10-15-1.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-15T17:14:26Z",
+      "pinterest_pin_id": "1021543128000706759",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-15T17:14:30Z"
     }
   ]
 }
