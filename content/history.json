@@ -1066,6 +1066,25 @@
       "pinterest_pin_id": "1021543128000675764",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-14T17:25:56Z"
+    },
+    {
+      "id": "2026-10-15-2",
+      "date": "2026-10-15",
+      "slot": 2,
+      "topic": "How Long A Website Takes",
+      "fact_index": 24,
+      "seed_fact": "Post-launch support (30 days minimum) should be in the contract. Bugs always appear.",
+      "fresh_tip": false,
+      "image_style": "palette_typography",
+      "image_headline": "Your Site Needs 30 Days of Care",
+      "status": "published",
+      "media_id": "18053053022809592",
+      "image_url": "https://raw.githubusercontent.com/Professional-X/instagram-auto-poster/290b4e67fff3cc962034fdcc5f33b133ff0ce001/content/images/2026-10-15-2.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-15T07:39:42Z",
+      "pinterest_pin_id": "1021543128000694766",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-15T07:39:46Z"
     }
   ]
 }
