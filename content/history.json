@@ -1123,6 +1123,25 @@
       "pinterest_pin_id": "1021543128000706759",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-15T17:14:30Z"
+    },
+    {
+      "id": "2026-10-16-2",
+      "date": "2026-10-16",
+      "slot": 2,
+      "topic": "What A Website Really Costs",
+      "fact_index": 22,
+      "seed_fact": "A blog add-on should cost $200-$500, not $2000. Don't get upsold.",
+      "fresh_tip": false,
+      "image_style": "browser_hero",
+      "image_headline": "Stop Overpaying for Blog Add‑Ons",
+      "status": "published",
+      "media_id": "17990158947066778",
+      "image_url": "https://raw.githubusercontent.com/aura-fyll/instagram-auto-poster/b1e3cb3fe10b86837788a0f2f6d09ec1449da156/content/images/2026-10-16-2.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-16T07:26:50Z",
+      "pinterest_pin_id": "1021543128000724153",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-16T07:26:54Z"
     }
   ]
 }
