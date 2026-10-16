@@ -1142,6 +1142,25 @@
       "pinterest_pin_id": "1021543128000724153",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-16T07:26:54Z"
+    },
+    {
+      "id": "2026-10-16-3",
+      "date": "2026-10-16",
+      "slot": 3,
+      "topic": "Signs You Need A Redesign",
+      "fact_index": 23,
+      "seed_fact": "If your site's copyright year is 2+ years old, visitors assume you're out of business.",
+      "fresh_tip": false,
+      "image_style": "phone_mobile",
+      "image_headline": "Your site looks outdated?",
+      "status": "published",
+      "media_id": "18638770234038470",
+      "image_url": "https://raw.githubusercontent.com/aura-fyll/instagram-auto-poster/06682c6624e7f3260113747107181d98f5cc2f10/content/images/2026-10-16-3.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-16T12:09:04Z",
+      "pinterest_pin_id": "1021543128000729055",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-16T12:09:09Z"
     }
   ]
 }
