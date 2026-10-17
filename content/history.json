@@ -1218,6 +1218,25 @@
       "pinterest_pin_id": "1021543128000753671",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-17T07:07:47Z"
+    },
+    {
+      "id": "2026-10-17-3",
+      "date": "2026-10-17",
+      "slot": 3,
+      "topic": "Why You Need A Website",
+      "fact_index": 2,
+      "seed_fact": "Your own domain = your own brand. Building only on Instagram means renting your audience from Meta.",
+      "fresh_tip": false,
+      "image_style": "palette_typography",
+      "image_headline": "Own Your Brand Online",
+      "status": "published",
+      "media_id": "17890865667460423",
+      "image_url": "https://raw.githubusercontent.com/aura-fyll/instagram-auto-poster/34bf1cfb43c6b44a0ac5f2eddff09f1a3ca97039/content/images/2026-10-17-3.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-17T11:28:04Z",
+      "pinterest_pin_id": "1021543128000758408",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-17T11:28:08Z"
     }
   ]
 }
