@@ -1237,6 +1237,25 @@
       "pinterest_pin_id": "1021543128000758408",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-17T11:28:08Z"
+    },
+    {
+      "id": "2026-10-17-4",
+      "date": "2026-10-17",
+      "slot": 4,
+      "topic": "Website Mistakes Losing You Clients",
+      "fact_index": 3,
+      "seed_fact": "Stock photos of strangers hugging laptops make you look fake. Real photos of your work build trust.",
+      "fresh_tip": false,
+      "image_style": "stats_callout",
+      "image_headline": "Stop Scaring Away Customers",
+      "status": "published",
+      "media_id": "18117070334076060",
+      "image_url": "https://raw.githubusercontent.com/aura-fyll/instagram-auto-poster/446f1a78b22ecdf5a59cb1299a1f5193480debf6/content/images/2026-10-17-4.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-17T15:48:05Z",
+      "pinterest_pin_id": "1021543128000764600",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-17T15:48:09Z"
     }
   ]
 }
