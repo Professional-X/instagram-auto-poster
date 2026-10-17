@@ -1199,6 +1199,25 @@
       "pinterest_pin_id": "1021543128000738530",
       "pinterest_board_id": "1021543196668085616",
       "pinterest_published_at": "2026-10-16T18:37:07Z"
+    },
+    {
+      "id": "2026-10-17-2",
+      "date": "2026-10-17",
+      "slot": 2,
+      "topic": "Local SEO For Small Business",
+      "fact_index": 1,
+      "seed_fact": "Use your city name in your homepage title and H1. 'Plumber in Austin' beats 'Welcome to my site'.",
+      "fresh_tip": false,
+      "image_style": "before_after",
+      "image_headline": "Use your city name in your homepage...",
+      "status": "published",
+      "media_id": "18099759386638695",
+      "image_url": "https://raw.githubusercontent.com/aura-fyll/instagram-auto-poster/e0faa0a15654896bea146e7a957f8c950b5a275a/content/images/2026-10-17-2.png",
+      "detail": "Published via Composio",
+      "recorded_at": "2026-10-17T07:07:43Z",
+      "pinterest_pin_id": "1021543128000753671",
+      "pinterest_board_id": "1021543196668085616",
+      "pinterest_published_at": "2026-10-17T07:07:47Z"
     }
   ]
 }
